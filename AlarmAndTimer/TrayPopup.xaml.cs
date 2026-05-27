@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
@@ -43,7 +44,12 @@ namespace AlarmAndTimer
         }
         private void DeleteTimer_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is TimerItem timerItem)
+            Debug.WriteLine("=========================================");
+            Debug.WriteLine($"1. sender의 진짜 타입: {sender.GetType().FullName}");
+            Debug.WriteLine($"2. sender의 문자열 표현: {sender.ToString()}");
+            Debug.WriteLine(sender is System.Windows.Controls.Button);
+            Debug.WriteLine("=========================================");
+            if (sender is System.Windows.Controls.Button button && button.DataContext is TimerItem timerItem)
             {
                 timerItem.StopTimer();
                 _viewModel.Timers.Remove(timerItem);
