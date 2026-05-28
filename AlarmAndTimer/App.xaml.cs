@@ -9,8 +9,8 @@ namespace AlarmAndTimer
 {
     public partial class App : Application
     {
-        private NotifyIcon _notifyIcon;
-        private TrayPopup _popup;
+        private NotifyIcon? _notifyIcon;
+        private TrayPopup? _popup;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {

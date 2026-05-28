@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AlarmAndTimer"
         mc:Ignorable="d"
-        Title="TrayPopup" Height="300" Width="250"
+        Title="TrayPopup" Height="250" Width="300"
         WindowStyle="None"
         ResizeMode="NoResize"
         AllowsTransparency="True"
@@ -14,7 +14,8 @@
         BorderThickness="3"
         ShowInTaskbar="False"
         Topmost="True"
-        Deactivated="Window_Deactivated">
+        Deactivated="Window_Deactivated"
+        IsVisibleChanged="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,20 +26,181 @@
         <Line Grid.Row="0" X1="0" X2="230" Y1="0" Y2="0" 
               Stroke="#CCCCCC" StrokeThickness="1" 
               StrokeDashArray="4 4" VerticalAlignment="Bottom" Margin="0,0,0,12"/>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,10">
-            <TextBox x:Name="TimerInput" Width="80" Height="26" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="60" FontSize="13"/>
-            <TextBlock Text="초 후" VerticalAlignment="Center" Margin="5,0,10,0" Foreground="#555555" FontSize="13"/>
-            <Button Content="시작" Width="60" Height="26" Click="StartTimer_Click" Background="#F5F5F5" BorderBrush="#CCCCCC" Cursor="Hand"/>
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,5">
+                <TextBox Grid.Column="0" 
+                        Name="TimerHourInput"
+                        Width="30"
+                        Text="{Binding RemainingSeconds}" 
+                        VerticalContentAlignment="Center"/>
+
+                <Grid Grid.Column="1" Width="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" />
+                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" />
+                </Grid>
+                
+                <TextBlock Grid.Column="2" Text="시간" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
+
+                <TextBox Grid.Column="3" 
+                        Name="TimerMinuteInput"
+                        Width="30"
+                        Text="{Binding RemainingSeconds}" 
+                        VerticalContentAlignment="Center"/>
+
+                <Grid Grid.Column="4" Width="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" />
+                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" />
+                </Grid>
+
+                <TextBlock Grid.Column="5" Text="분" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
+                
+                <TextBox Grid.Column="6" 
+                        Name="TimerSecondInput"
+                        Width="30"
+                        Text="{Binding RemainingSeconds}" 
+                        VerticalContentAlignment="Center"/>
+
+                <Grid Grid.Column="7" Width="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" />
+                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" />
+                </Grid>
+
+                <TextBlock Grid.Column="8" Text="초 후" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
+
+                <Button Content="타이머" Height="26" Click="StartTimer_Click" Background="#F5F5F5" BorderBrush="#CCCCCC" Cursor="Hand"/>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,10">
+                <TextBox Grid.Column="0" 
+                       Name="AlarmHourInput"
+                       Width="30"
+                       Text="{Binding RemainingSeconds}" 
+                       VerticalContentAlignment="Center"/>
+
+                <Grid Grid.Column="1" Width="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" />
+                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" />
+                </Grid>
+
+                <TextBlock Grid.Column="2" Text="시간" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
+
+                <TextBox Grid.Column="3" 
+                       Name="AlarmMinuteInput"
+                       Width="30"
+                       Text="{Binding RemainingSeconds}" 
+                       VerticalContentAlignment="Center"/>
+
+                <Grid Grid.Column="4" Width="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" />
+                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" />
+                </Grid>
+
+                <TextBlock Grid.Column="5" Text="분" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
+
+                <TextBox Grid.Column="6" 
+                       Name="AlarmSecondInput"
+                       Width="30"
+                       Text="{Binding RemainingSeconds}" 
+                       VerticalContentAlignment="Center"/>
+
+                <Grid Grid.Column="7" Width="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" />
+                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" />
+                </Grid>
+
+                <TextBlock Grid.Column="8" Text="초 후" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
+
+                <Button Content="알람" Height="26" Click="StartAlarm_Click" Background="#F5F5F5" BorderBrush="#CCCCCC" Cursor="Hand"/>
+            </StackPanel>
+        </Grid>
         <Line Grid.Row="1" X1="0" X2="230" Y1="0" Y2="0" 
               Stroke="#CCCCCC" StrokeThickness="1" 
               StrokeDashArray="4 4" VerticalAlignment="Bottom" Margin="0,0,0,12"/>
-        <ListView Grid.Row="2" x:Name="TimerListView" BorderBrush="Transparent" Background="Transparent" HorizontalContentAlignment="Stretch" Margin="0,5,0,0">
+        <ListView
+            Grid.Row="2"
+            x:Name="TimerListView"
+            BorderBrush="Transparent"
+            Background="Transparent"
+            HorizontalContentAlignment="Stretch"
+            Margin="0,5,0,0"
+            
+            ItemsSource="{Binding Timers}"
+            d:DataContext="{d:DesignInstance Type=local:DesignViewModel, IsDesignTimeCreatable=True}">
+            
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <TextBlock Text="{Binding TimeLeftString}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <Button Content="삭제" Padding="5,2" FontSize="11" HorizontalAlignment="Right" Click="DeleteTimer_Click" Background="#FFF0F0" BorderBrush="#FFE0E0"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                            Text="{Binding TimeLeftString}" 
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Margin="0,0,15,0"
+                            VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Column="1"
+                            Text="{Binding EndTimeString, StringFormat='종료: {0}'}" 
+                            FontSize="12"
+                            Foreground="Gray"
+                            VerticalAlignment="Center"/>
+
+                        <Button Grid.Column="2"
+                            Content="{Binding PauseButtonText}"
+                            Padding="5,2"
+                            FontSize="11"
+                            Margin="0,0,5,0"
+                            Click="PauseTimer_Click"
+                            Background="#FFF0F0"
+                            BorderBrush="#FFE0E0"
+                            VerticalAlignment="Center"/>
+                        
+                        <Button Grid.Column="3"
+                            Content="삭제"
+                            Padding="5,2"
+                            FontSize="11"
+                            Click="DeleteTimer_Click"
+                            Background="#FFF0F0"
+                            BorderBrush="#FFE0E0"
+                            VerticalAlignment="Center"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
