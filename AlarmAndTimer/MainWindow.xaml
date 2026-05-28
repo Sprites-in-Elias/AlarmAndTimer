@@ -8,6 +8,8 @@
         Title="MainWindow" Height="400" Width="350"
         WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseMove="Window_MouseMove"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
         
         Background="White"
         BorderBrush="#CCCCCC"
@@ -18,7 +20,9 @@
             <MenuItem Name="MakeAlarmContextMenu" Header="알람 생성" Click="OpenAlarmPanel_Click" />
             <Separator />
             <MenuItem Header="설정" />
-            <MenuItem Header="로드" />
+            <MenuItem Header="스크립트 관리" Click="MangeScript_Click"/>
+            <MenuItem Header="스크립트 불러오기" />
+            <MenuItem Header="임시" Click="SelectFile_Click" />
             <Separator />
             <MenuItem Header="항상 위" 
                   Name="AlwaysTopContextMenu"
@@ -26,6 +30,7 @@
                   Checked="AlwaysTop_Checked" 
                   Unchecked="AlwaysTop_Unchecked" />
             <MenuItem Header="트레이로 보내기" Click="TrayMenu_HyperLink" />
+            <MenuItem Header="시작표시줄에서 숨기기" />
             <MenuItem Header="최소화" Click="Minimize_HyperLink" />
             <MenuItem Header="완전히 종료" Click="CompletelyClose_HyperLink" />
         </ContextMenu>
@@ -135,9 +140,8 @@
             <Button Content="+" Width="50" Height="50" Click="AddButton_Click"/>
         </StackPanel>
         <Grid Name="MakePanelBackground"
-              Visibility="Hidden"
-              MouseLeftButtonDown="CloseMakePanel">
-            <Border Background="#1A000000" />
+              Visibility="Hidden">
+            <Border Name="MakePanelBackgroundBorder" Background="#1A000000" />
         </Grid>
         <StackPanel Name="AlarmMakePanel" VerticalAlignment="Bottom" Visibility="Hidden">
             <Border Background="Red" CornerRadius="10, 10, 0, 0">

@@ -1,0 +1,37 @@
+﻿<Window x:Class="AlarmAndTimer.ScriptManager"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AlarmAndTimer"
+        mc:Ignorable="d"
+        ResizeMode="NoResize"
+        
+        Title="스크립트 매니저" Height="500" Width="440">
+    <Grid Background="#efefef">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="90"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="18,18,18,18" Background="#ffffff">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MouseDoubleClick="MakeManageCard">
+                    <StackPanel Name="TimerList" Orientation="Vertical">
+                    </StackPanel>
+                 </ScrollViewer> 
+            </Border>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid Margin="0,18,18,18">
+                <TextBlock Text="dddd"></TextBlock>
+                <StackPanel Orientation="Vertical">
+                    <Button Content="저장" Margin="0,0,0,10" Click="SaveScript" />
+                    <Button Content="불러오기" Click="LoadScript" />
+                </StackPanel>
+                <Grid VerticalAlignment="Bottom">
+                    <Button Content="취소" Click="CancelButton_Click" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -13,6 +13,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Windows.Forms;
+using Point = System.Windows.Point;
+using Microsoft.Win32;
+using System.IO;
 
 namespace AlarmAndTimer
 {
@@ -42,12 +45,179 @@ namespace AlarmAndTimer
                 MakeAlarmContextMenu.IsEnabled = true;
             }
         }
+
+        private void SelectFile_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+
+            // 파일 필터 설정 (사용자가 원하는 파일만 보이게)
+            openFileDialog.Filter = "텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*";
+            string lastPath = Properties.Settings.Default.LastOpenedDirectory;
+            if (!string.IsNullOrEmpty(lastPath) && Directory.Exists(lastPath))
+            {
+                openFileDialog.InitialDirectory = lastPath;
+            }
+            // 대화상자 띄우기
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // 사용자가 선택한 파일 경로
+                string selectedPath = openFileDialog.FileName;
+
+                string? folderPath = System.IO.Path.GetDirectoryName(selectedPath);
+                if (folderPath != null)
+                {
+                    Properties.Settings.Default.LastOpenedDirectory = folderPath;
+                    Properties.Settings.Default.Save();
+                }
+
+                // 이제 이 경로를 사용해!
+                ProcessFileContent(selectedPath);
+            }
+        }
+
+        private bool CheckTimeValid (string[] timeParts, int hourLimit, string line, int lineNumber)
+        {
+            if (int.TryParse(timeParts[0], out int hour) &&
+                int.TryParse(timeParts[1], out int minute) &&
+                int.TryParse(timeParts[2], out int second))
+            {
+                // 2. 시간(1~12), 분(0~59), 초(0~59) 범위 검사
+                bool isHourValid = (hour >= 1 && hour <= hourLimit);
+                bool isMinuteValid = (minute >= 0 && minute <= 59);
+                bool isSecondValid = (second >= 0 && second <= 59);
+
+                if (!isHourValid)
+                {
+                    System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n시간의 범위는 1~{hourLimit} 입니다", "형식이 맞지 않습니다");
+                    return false;
+                }
+                if (!isMinuteValid)
+                {
+                    System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n분의 범위는 0~59 입니다", "형식이 맞지 않습니다");
+                    return false;
+                }
+                if (!isSecondValid)
+                {
+                    System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n초의 범위는 0~59 입니다", "형식이 맞지 않습니다");
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                // 숫자 변환 실패 처리
+                System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n세 번째 단어가 유효한 숫자가 아닙니다 \n ※올바른 형식의 예\n\n================\n   Timer 12:30:00\n   Alarm PM 02:22:12\n================", "형식이 맞지 않습니다");
+                return false;
+            }
+        }
+
+        private void ProcessFileContent(string filePath)
+        {
+            Debug.WriteLine($"{filePath}에서 찾기");
+            int lineNumber = 0;
+            // 파일의 모든 줄을 한 줄씩 읽기
+            foreach (string line in File.ReadLines(filePath))
+            {
+                lineNumber++;
+                Debug.WriteLine($"{lineNumber} : {line}");
+                if (string.IsNullOrWhiteSpace(line)) continue; // 빈 줄은 건너뜀
+
+                // 공백 기준으로 단어 나누기
+                string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                string type = parts[0].ToLower(); // 첫 단어: Timer 또는 Alarm
+                if (type != "timer" && type != "alarm")
+                {
+                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n첫단어는 Alarm 혹은 Timer 입니다\n\n※ 올바른 형식의 예\n\n================\n   Timer 12:30:00\n   Alarm PM 02:22:12\n================", "형식이 맞지 않습니다");
+                    break;
+                }
+                if (type == "timer" && parts.Length != 2)
+                {
+                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n타이머는 하나의 시간 인수만 필요합니다\n\n※올바른 형식의 예\n\n================\n   Timer 12:30:00\n================", "형식이 맞지 않습니다");
+                    break;
+                }
+                if (type == "alarm" && parts.Length != 3)
+                {
+                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n알람은 AM/PM 및 시간 두 개의 인수만 필요합니다\n\n※올바른 형식의 예\n\n================\n   Alarm PM 12:30:00\n================", "형식이 맞지 않습니다");
+                    break;
+                }
+                if (type == "timer")
+                {
+                    string timeData = parts[1];
+                    string[] timeParts = timeData.Split(':');
+                    if (timeParts.Length != 3)
+                    {
+                        System.Windows.MessageBox.Show($"Line{lineNumber} : {line}\n\n타이머의 인수는 :로 구분된 3개의 숫자입니다 \n 예) Timer 12:30:00", "형식이 맞지 않습니다");
+                        break;
+                    }
+                    if (!CheckTimeValid(timeParts, 99, line, lineNumber)) { break; }
+                    Debug.WriteLine($"쓰기성공 {timeParts[0]}, {timeParts[1]}, {timeParts[2]}");
+                }
+                else if (type == "alarm")
+                {
+                    string amPm = parts[1].ToLower(); // AM 또는 PM
+                    string timeData = parts[2];
+                    string[] timeParts = timeData.Split(':');
+                    if (amPm != "am" && amPm != "pm")
+                    {
+                        System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n알람의 첫 번째 인수는 AM 혹은 PM 입니다 \n 예) Alarm PM 12:30:00", "형식이 맞지 않습니다");
+                        break;
+                    }
+                    if (timeParts.Length != 3)
+                    {
+                        System.Windows.MessageBox.Show($"Line{lineNumber} : {line}\n\n알람의 두 번째 인수는 :로 구분된 3개의 숫자입니다 \n 예) Timer 12:30:00", "형식이 맞지 않습니다");
+                        break;
+                    }
+                    if (!CheckTimeValid(timeParts, 12, line, lineNumber)) { break; }
+                    Debug.WriteLine($"쓰기성공 {timeParts[0]}, {timeParts[1]}, {timeParts[2]}");
+                }
+            }
+        }
+        private void MangeScript_Click(object sender, EventArgs e)
+        {
+            ScriptManager editor = new ScriptManager();
+            editor.ShowDialog();
+        }
+
+        private Point _mouseDownPoint;
+        private bool _isDragging = false;
+
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
+            // 1. 마우스 누른 위치 저장
+            _mouseDownPoint = e.GetPosition(this);
+            _isDragging = false;
+        }
+
+        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && !_isDragging)
             {
-                this.DragMove();
+                Point currentPoint = e.GetPosition(this);
+
+                // 5픽셀 이상 움직이면 드래그로 간주
+                if (Math.Abs(currentPoint.X - _mouseDownPoint.X) > 5 ||
+                    Math.Abs(currentPoint.Y - _mouseDownPoint.Y) > 5)
+                {
+                    _isDragging = true;
+                    this.DragMove(); // 드래그 시작 (여기서 윈도우 이동)
+                }
             }
+        }
+
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // 드래그가 아니었을 때만 '클릭'으로 판정
+            if (!_isDragging)
+            {
+                var element = e.Source as FrameworkElement;
+                if (element != null && element.Name == "MakePanelBackgroundBorder")
+                {
+                    CloseMakePanel();
+                }
+            }
+
+            _isDragging = false; // 상태 초기화
         }
         private void SetupTrayIcon()
         {
@@ -342,7 +512,7 @@ namespace AlarmAndTimer
             AlarmMakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
         }
-        private void CloseMakePanel(object sender, MouseButtonEventArgs e)
+        private void CloseMakePanel()
         {
             MakePanelBackground.Visibility = Visibility.Hidden;
             TimerMakePanel.Visibility = Visibility.Hidden;

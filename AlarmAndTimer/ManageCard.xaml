@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="AlarmAndTimer.ManageCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AlarmAndTimer"
+             mc:Ignorable="d" 
+             
+             Loaded="ManageCard_Loaded"
+             LostFocus="UserControl_LostFocus"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Orientation="Horizontal" Margin="10,10,10,0">
+            <ComboBox Name="TypeSelector" 
+                      SelectionChanged="TypeSelector_SelectionChanged"
+                      Width="60"
+                      MouseDoubleClick="NoPropagation">
+                <ComboBoxItem Content="Timer" />
+                <ComboBoxItem Content="Alarm" />
+            </ComboBox>
+
+            <ComboBox Name="AmPmSelector" Visibility="Collapsed" Width="52" MouseDoubleClick="NoPropagation">
+                <ComboBoxItem Content="AM" />
+                <ComboBoxItem Content="PM" />
+            </ComboBox>
+
+            <StackPanel Name="TimeInputBox" Orientation="Horizontal" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="HourInput" Width="24" LostFocus="Hour_LostFocus" PreviewMouseDoubleClick="NoPropagation" />
+                    <TextBlock Text="시" />
+                    <TextBlock Name="GanText" Text="간" Visibility="Collapsed" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="MinuteInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseDoubleClick="NoPropagation" />
+                    <TextBlock Text="분" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="SecondInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseDoubleClick="NoPropagation" />
+                    <TextBlock Text="초" />
+                </StackPanel>
+
+                <Button Content="삭제" Click="DeleteCard_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
+
