@@ -12,17 +12,36 @@
         Background="White"
         BorderBrush="#CCCCCC"
         BorderThickness="3">
+    <Window.ContextMenu>
+        <ContextMenu Opened="ContextMenu_Opened">
+            <MenuItem Name="MakeTimerContextMenu" Header="타이머 생성" Click="OpenTimerPanel_Click" />
+            <MenuItem Name="MakeAlarmContextMenu" Header="알람 생성" Click="OpenAlarmPanel_Click" />
+            <Separator />
+            <MenuItem Header="설정" />
+            <MenuItem Header="로드" />
+            <Separator />
+            <MenuItem Header="항상 위" 
+                  Name="AlwaysTopContextMenu"
+                  IsCheckable="True"
+                  Checked="AlwaysTop_Checked" 
+                  Unchecked="AlwaysTop_Unchecked" />
+            <MenuItem Header="트레이로 보내기" Click="TrayMenu_HyperLink" />
+            <MenuItem Header="최소화" Click="Minimize_HyperLink" />
+            <MenuItem Header="완전히 종료" Click="CompletelyClose_HyperLink" />
+        </ContextMenu>
+    </Window.ContextMenu>
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
 
                 <CheckBox Name="AlwaysTop_CheckBox"
                           VerticalAlignment="Center"
-                          Checked="AlwaysTop_Checked" 
+                          IsChecked="{Binding IsAlwaysTop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Checked="AlwaysTop_Checked"
                           Unchecked="AlwaysTop_Unchecked"
                           Margin="0,0,-7,0"/>
                 <TextBlock Margin="10,0,10,0"
@@ -104,7 +123,7 @@
             </ListView>
         </Grid>
 
-        <StackPanel Name="AddButtonPackage" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+        <StackPanel Name="AddButtonPackage" VerticalAlignment="Bottom" HorizontalAlignment="Right" Visibility="Hidden">
 
             <StackPanel x:Name="SubButtonsPanel" Visibility="Collapsed" Margin="0,0,0,10">
                 <Button Content="설정" Height="30" Margin="0,5"/>
@@ -115,6 +134,11 @@
 
             <Button Content="+" Width="50" Height="50" Click="AddButton_Click"/>
         </StackPanel>
+        <Grid Name="MakePanelBackground"
+              Visibility="Hidden"
+              MouseLeftButtonDown="CloseMakePanel">
+            <Border Background="#1A000000" />
+        </Grid>
         <StackPanel Name="AlarmMakePanel" VerticalAlignment="Bottom" Visibility="Hidden">
             <Border Background="Red" CornerRadius="10, 10, 0, 0">
                 <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, 30, 0, 30">
@@ -142,8 +166,8 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
 
-                                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" Click="TimerHourUpButton_Click" />
-                                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" Click="TimerHourDownButton_Click" />
+                                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" Click="AlarmHourUpButton_Click" />
+                                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" Click="AlarmHourDownButton_Click" />
                                 </Grid>
 
                                 <TextBlock Grid.Column="2" Text="시" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
@@ -159,8 +183,8 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
 
-                                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" Click="TimerMinuteUpButton_Click" />
-                                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" Click="TimerMinuteDownButton_Click" />
+                                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" Click="AlarmMinuteUpButton_Click" />
+                                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" Click="AlarmMinuteDownButton_Click" />
                                 </Grid>
 
                                 <TextBlock Grid.Column="5" Text="분" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
@@ -176,8 +200,8 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
 
-                                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" Click="TimerSecondUpButton_Click" />
-                                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" Click="TimerSecondDownButton_Click" />
+                                    <Button Grid.Row="0" Content="▲" FontSize="8" Padding="0" Click="AlarmSecondUpButton_Click" />
+                                    <Button Grid.Row="1" Content="▼" FontSize="8" Padding="0" Click="AlarmSecondDownButton_Click" />
                                 </Grid>
 
                                 <TextBlock Grid.Column="8" Text="초에" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>

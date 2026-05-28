@@ -16,9 +16,6 @@ using System.Windows.Forms;
 
 namespace AlarmAndTimer
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private MainViewModel _viewModel;
@@ -29,8 +26,21 @@ namespace AlarmAndTimer
             SetupTrayIcon();
             this.DataContext = _viewModel;
 
-            // UI의 리스트뷰에 데이터 연결
             TimerListView.ItemsSource = _viewModel.Timers;
+        }
+        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            AlwaysTopContextMenu.IsChecked = this.Topmost;
+            if (AlarmMakePanel.Visibility == Visibility.Visible || TimerMakePanel.Visibility == Visibility.Visible)
+            {
+                MakeTimerContextMenu.IsEnabled = false;
+                MakeAlarmContextMenu.IsEnabled = false;
+            }
+            else
+            {
+                MakeTimerContextMenu.IsEnabled = true;
+                MakeAlarmContextMenu.IsEnabled = true;
+            }
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -42,19 +52,28 @@ namespace AlarmAndTimer
         private void SetupTrayIcon()
         {
             trayIcon = new NotifyIcon();
-            // 트레이 아이콘 이미지 설정 (프로젝트 폴더에 .ico 파일 하나 넣어둬)
             trayIcon.Icon = System.Drawing.SystemIcons.Application;
             trayIcon.Text = "타이머";
 
-            // 트레이 아이콘을 더블 클릭하면 다시 창이 나타나게 함
             trayIcon.DoubleClick += (s, e) => {
                 this.Show();
                 this.WindowState = WindowState.Normal;
                 trayIcon.Visible = false;
             };
         }
-        private void AlwaysTop_Checked(object sender, RoutedEventArgs e) { this.Topmost = true; }
-        private void AlwaysTop_Unchecked(object sender, RoutedEventArgs e) { this.Topmost = false; }
+        private void AlwaysTop_Checked(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("켜짐");
+            AlwaysTop_CheckBox.IsChecked = true;
+            
+            this.Topmost = true;
+        }
+        private void AlwaysTop_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("꺼짐");
+            AlwaysTop_CheckBox.IsChecked = false;
+            this.Topmost = false;
+        }
         private void AlwaysTop_HyperLink(object sender, RoutedEventArgs e) { AlwaysTop_CheckBox.IsChecked = !AlwaysTop_CheckBox.IsChecked; }
         private void TrayMenu_HyperLink(object sender, RoutedEventArgs e)
         {
@@ -65,7 +84,6 @@ namespace AlarmAndTimer
         private void CompletelyClose_HyperLink(object sender, RoutedEventArgs e) { System.Windows.Application.Current.Shutdown(); }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            // Visibility 상태를 반전시킴
             if (SubButtonsPanel.Visibility == Visibility.Visible)
             {
                 SubButtonsPanel.Visibility = Visibility.Collapsed;
@@ -79,7 +97,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(TimerHourInput.Text, out int hour))
             {
-                hour = (hour + 1); // 0-99 사이로 순환
+                hour = (hour + 1);
                 if (hour == 100) return;
                 TimerHourInput.Text = hour.ToString();
             }
@@ -92,7 +110,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(TimerHourInput.Text, out int hour))
             {
-                hour = (hour - 1); // 0-99 사이로 순환
+                hour = (hour - 1); 
                 if (hour == -1) return;
                 TimerHourInput.Text = hour.ToString();
             }
@@ -105,7 +123,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(TimerMinuteInput.Text, out int minute))
             {
-                minute = (minute + 1) % 60; // 0-59 사이로 순환
+                minute = (minute + 1) % 60;
                 TimerMinuteInput.Text = minute.ToString();
             }
             else if (string.IsNullOrWhiteSpace(TimerMinuteInput.Text))
@@ -117,7 +135,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(TimerMinuteInput.Text, out int minute))
             {
-                minute = (minute - 1 + 60) % 60; // 0-59 사이로 순환
+                minute = (minute - 1 + 60) % 60;
                 TimerMinuteInput.Text = minute.ToString();
             }
             else if (string.IsNullOrWhiteSpace(TimerMinuteInput.Text))
@@ -129,7 +147,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(TimerSecondInput.Text, out int second))
             {
-                second = (second + 1) % 60; // 0-59 사이로 순환
+                second = (second + 1) % 60;
                 TimerSecondInput.Text = second.ToString();
             }
             else if (string.IsNullOrWhiteSpace(TimerSecondInput.Text))
@@ -141,7 +159,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(TimerSecondInput.Text, out int second))
             {
-                second = (second - 1 + 60) % 60; // 0-59 사이로 순환
+                second = (second - 1 + 60) % 60;
                 TimerSecondInput.Text = second.ToString();
             }
             else if (string.IsNullOrWhiteSpace(TimerSecondInput.Text))
@@ -152,11 +170,8 @@ namespace AlarmAndTimer
 
         private void OpenAlarmPanel_Click(object sender, RoutedEventArgs e)
         {
-            // 현재 시간 가져오기
             DateTime now = DateTime.Now;
 
-            // 각 TextBox에 현재 시간 대입
-            // (네가 만든 TextBox의 x:Name이 각각 HourInput, MinuteInput, SecondInput이라고 가정할게)
             int tempHour = now.Hour;
             if (tempHour > 12)
             {
@@ -177,15 +192,17 @@ namespace AlarmAndTimer
             AlarmMinuteInput.Text = now.Minute.ToString();
             AlarmSecondInput.Text = now.Second.ToString();
 
-            AddButtonPackage.Visibility = Visibility.Collapsed;
-            SubButtonsPanel.Visibility = Visibility.Collapsed;
+            //AddButtonPackage.Visibility = Visibility.Collapsed;
+            //SubButtonsPanel.Visibility = Visibility.Collapsed;
+            MakePanelBackground.Visibility = Visibility.Visible;
             AlarmMakePanel.Visibility = Visibility.Visible;
         }
         private void AlarmHourUpButton_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("gggg");
             if (int.TryParse(AlarmHourInput.Text, out int hour))
             {
-                hour = (hour + 1); // 0-12 사이로 순환
+                hour = (hour + 1); 
                 if (hour == 13) { hour = 1; }
                 AlarmHourInput.Text = hour.ToString();
             }
@@ -194,7 +211,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(AlarmHourInput.Text, out int hour))
             {
-                hour = (hour - 1); // 0-12 사이로 순환
+                hour = (hour - 1); 
                 if (hour == 0) { hour = 12; }
                 AlarmHourInput.Text = hour.ToString();
             }
@@ -203,7 +220,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(AlarmMinuteInput.Text, out int minute))
             {
-                minute = (minute + 1) % 60; // 0-59 사이로 순환
+                minute = (minute + 1) % 60;
                 AlarmMinuteInput.Text = minute.ToString();
             }
         }
@@ -211,7 +228,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(AlarmMinuteInput.Text, out int minute))
             {
-                minute = (minute - 1 + 60) % 60; // 0-59 사이로 순환
+                minute = (minute - 1 + 60) % 60; 
                 AlarmMinuteInput.Text = minute.ToString();
             }
         }
@@ -219,7 +236,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(AlarmSecondInput.Text, out int second))
             {
-                second = (second + 1) % 60; // 0-59 사이로 순환
+                second = (second + 1) % 60; 
                 AlarmSecondInput.Text = second.ToString();
             }
         }
@@ -227,7 +244,7 @@ namespace AlarmAndTimer
         {
             if (int.TryParse(AlarmSecondInput.Text, out int second))
             {
-                second = (second - 1 + 60) % 60; // 0-59 사이로 순환
+                second = (second - 1 + 60) % 60;
                 AlarmSecondInput.Text = second.ToString();
             }
         }
@@ -251,18 +268,21 @@ namespace AlarmAndTimer
             var newTimer = new TimerItem(second + minute * 60 + hour * 60 * 60, memo);
             _viewModel.Timers.Add(newTimer);
 
+            MakePanelBackground.Visibility = Visibility.Hidden;
             TimerMakePanel.Visibility = Visibility.Hidden;
-            AddButtonPackage.Visibility = Visibility.Visible;
+            //AddButtonPackage.Visibility = Visibility.Visible;
         }
         private void TimerMakeCancel_Click(object sender, RoutedEventArgs e)
         {
+            MakePanelBackground.Visibility = Visibility.Hidden;
             TimerMakePanel.Visibility = Visibility.Hidden;
-            AddButtonPackage.Visibility = Visibility.Visible;
+            //AddButtonPackage.Visibility = Visibility.Visible;
         }
         private void OpenTimerPanel_Click(object sender, RoutedEventArgs e)
         {
-            AddButtonPackage.Visibility = Visibility.Collapsed;
-            SubButtonsPanel.Visibility = Visibility.Collapsed;
+            //AddButtonPackage.Visibility = Visibility.Collapsed;
+            //SubButtonsPanel.Visibility = Visibility.Collapsed;
+            MakePanelBackground.Visibility = Visibility.Visible;
             TimerMakePanel.Visibility = Visibility.Visible;
         }
 
@@ -300,28 +320,34 @@ namespace AlarmAndTimer
             Debug.WriteLine($"시각 {hour}, {now.Hour}");
             alarmTime = alarmTime.AddSeconds(1);
 
-            // 4. 만약 설정한 시간이 이미 지났다면 '내일' 알람으로 설정
             if (alarmTime <= now)
             {
                 alarmTime = alarmTime.AddDays(1);
             }
 
-            // 5. 남은 시간 계산 (TimeSpan 사용)
             TimeSpan remaining = alarmTime - now;
 
-            // 결과: 총 몇 초 남았는지 확인
             double totalSecondsLeft = remaining.TotalSeconds;
 
             Debug.WriteLine($"알람까지 남은 시간: {remaining.Hours}시간 {remaining.Minutes}분 {remaining.Seconds}초\n총 {totalSecondsLeft:F0}초 후 울림");
             _viewModel.Timers.Add(new TimerItem((int)totalSecondsLeft, memo));
 
+            MakePanelBackground.Visibility = Visibility.Hidden;
             AlarmMakePanel.Visibility = Visibility.Hidden;
-            AddButtonPackage.Visibility = Visibility.Visible;
+            //AddButtonPackage.Visibility = Visibility.Visible;
         }
         private void AlarmMakeCancel_Click(object sender, RoutedEventArgs e)
         {
+            MakePanelBackground.Visibility = Visibility.Hidden;
             AlarmMakePanel.Visibility = Visibility.Hidden;
-            AddButtonPackage.Visibility = Visibility.Visible;
+            //AddButtonPackage.Visibility = Visibility.Visible;
+        }
+        private void CloseMakePanel(object sender, MouseButtonEventArgs e)
+        {
+            MakePanelBackground.Visibility = Visibility.Hidden;
+            TimerMakePanel.Visibility = Visibility.Hidden;
+            AlarmMakePanel.Visibility = Visibility.Hidden;
+            //AddButtonPackage.Visibility = Visibility.Visible;
         }
         private void DeleteTimer_Click(object sender, RoutedEventArgs e)
         {
@@ -337,8 +363,6 @@ namespace AlarmAndTimer
             {
                 timerItem.TogglePause();
 
-                // 버튼 텍스트가 바로 안 바뀐다면 강제로 UI를 업데이트해줘야 할 수도 있어.
-                // 하지만 보통은 INotifyPropertyChanged를 구현했으면 자동으로 바뀔 거야.
             }
         }
     }
@@ -404,19 +428,16 @@ namespace AlarmAndTimer
 
         public string PauseButtonText => _isPaused ? "재개" : "정지";
 
-        // 생성자: 태어나는 순간 자신만의 1초 시계를 가동함
         public TimerItem(int initialSeconds, string memo)
         {
             _isPaused = false;
             RemainingSeconds = initialSeconds;
 
-            // ★ 각자 독립된 타이머 객체 생성
             _individualTimer = new DispatcherTimer();
             _individualTimer.Interval = TimeSpan.FromSeconds(1);
             _individualTimer.Tick += IndividualTimer_Tick;
             _timerMemo += memo;
 
-            // 등록 버튼을 누른 바로 '그 소수점 밀리초 시점'부터 1초를 세기 시작함!
             _individualTimer.Start();
         }
 
@@ -429,14 +450,13 @@ namespace AlarmAndTimer
                 if (RemainingSeconds == 0)
                 {
                     System.Media.SystemSounds.Asterisk.Play();
-                    _individualTimer.Stop(); // 0초 되면 자기 타이머는 종료
+                    _individualTimer.Stop(); 
                 }
             }
         }
 
 
 
-        // 삭제버튼 누를 때 호출해서 백그라운드 타이머를 확실히 죽여줌
         public void StopTimer()
         {
             _individualTimer?.Stop();
