@@ -27,6 +27,31 @@ namespace AlarmAndTimer
         {
             InitializeComponent();
         }
+        public ManageCard(InputItem item) // : this()를 붙여서 기본 생성자도 같이 호출해야 함!
+        {
+            InitializeComponent();
+            if (item.Type == "alarm")
+            {
+                TypeSelector.SelectedItem = ComboAlarm;
+                if (item.AmPm == "am")
+                {
+                    AmPmSelector.SelectedItem = ComboAm;
+                }
+                else if (item.AmPm == "pm")
+                {
+                    AmPmSelector.SelectedItem = ComboPm;
+                }
+            }
+            else if (item.Type == "timer")
+            {
+                TypeSelector.SelectedItem = ComboTimer;
+            }
+            HourInput.Text = item.Hour;
+            MinuteInput.Text = item.Minute;
+            SecondInput.Text = item.Second;
+            MemoInput.Text = item.Memo;
+        }
+
         private void ManageCard_Loaded(object sender, RoutedEventArgs e)
         {
             TypeSelector.Focus();
@@ -48,11 +73,35 @@ namespace AlarmAndTimer
             if (newType == "Timer")
             {
                 AmPmSelector.Visibility = Visibility.Collapsed;
+                HourInput.Text = "";
+                MinuteInput.Text = "";
+                SecondInput.Text = "";
                 ExecuteTimerLogic();
             }
             else if (newType == "Alarm")
             {
                 GanText.Visibility = Visibility.Collapsed;
+                DateTime now = DateTime.Now;
+
+                int tempHour = now.Hour;
+                if (tempHour > 12)
+                {
+                    tempHour -= 12;
+                    AmPmSelector.SelectedItem = ComboPm;
+                }
+                else if (tempHour == 12)
+                {
+                    AmPmSelector.SelectedItem = ComboPm;
+                }
+                else if (tempHour == 0)
+                {
+                    tempHour = 12;
+                    AmPmSelector.SelectedItem = ComboAm;
+                }
+                else { AmPmSelector.SelectedItem = ComboAm; }
+                HourInput.Text = tempHour.ToString();
+                MinuteInput.Text = now.Minute.ToString();
+                SecondInput.Text = now.Second.ToString();
                 ExecuteAlarmLogic();
             }
         }
@@ -162,8 +211,22 @@ namespace AlarmAndTimer
                 parentPanel.Children.Remove(this);
             }
         }
+        private void TextBoxAllSelect(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                // 텍스트박스가 아직 포커스를 가지고 있지 않은 경우에만 선택 수행
+                if (!textBox.IsKeyboardFocusWithin)
+                {
+                    textBox.Focus(); // 포커스 주기
+                    textBox.SelectAll(); // 전체 선택
+                    e.Handled = true; // 마우스 클릭 이벤트를 여기서 차단하여 선택이 풀리지 않게 함
+                }
+            }
+        }
         private void NoPropagation(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("낫프로파게이션");
             e.Handled = true;
         }
     }

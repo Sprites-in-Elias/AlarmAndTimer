@@ -21,8 +21,8 @@
             <Separator />
             <MenuItem Header="설정" />
             <MenuItem Header="스크립트 관리" Click="MangeScript_Click"/>
-            <MenuItem Header="스크립트 불러오기" />
-            <MenuItem Header="임시" Click="SelectFile_Click" />
+            <MenuItem Header="스크립트 불러오기" Click="LoadScript_Click" />
+            <!--<MenuItem Header="임시" Click="ContextMenuTempButton_Click" />-->
             <Separator />
             <MenuItem Header="항상 위" 
                   Name="AlwaysTopContextMenu"

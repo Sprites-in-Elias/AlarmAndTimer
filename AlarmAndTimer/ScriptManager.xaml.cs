@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using System.Diagnostics;
 
 namespace AlarmAndTimer
 {
@@ -45,27 +46,31 @@ namespace AlarmAndTimer
                 string colChar = ":";
                 string newLineChar = "\n";
                 sb.Append(row.TypeSelector.Text + blankChar);
-                if (type == "alarm")
+                string hourInput = row.HourInput.Text;
+                string minuteInput = row.MinuteInput.Text;
+                string secondInput = row.SecondInput.Text;
+                string memoInput = row.MemoInput.Text;
+                if (type == "timer")
+                {
+                    if (hourInput == null || hourInput.Length == 0) hourInput = "0";
+                    if (minuteInput == null || minuteInput.Length == 0) minuteInput = "0";
+                    if (secondInput == null || secondInput.Length == 0) secondInput = "0";
+                }
+                else if (type == "alarm")
                 {
                     string ampm = row.AmPmSelector.Text;
-                    if (ampm == null || ampm.Length == 0)
+                    if (ampm == null || ampm.Length == 0
+                        || hourInput == null || hourInput.Length == 0
+                        || minuteInput == null || minuteInput.Length == 0
+                        || secondInput == null || secondInput.Length == 0)
                     {
                         System.Windows.MessageBox.Show($"Line ({index}) : 빈칸을 채워주세요");
                         return;
                     }
                     sb.Append(ampm).Append(blankChar);
                 }
-                string hourInput = row.HourInput.Text;
-                string minuteInput = row.MinuteInput.Text;
-                string secondInput = row.SecondInput.Text;
-                if (hourInput == null || hourInput.Length == 0
-                    || minuteInput == null || minuteInput.Length == 0
-                    || secondInput == null || secondInput.Length == 0)
-                {
-                    System.Windows.MessageBox.Show($"Line ({index}) : 빈칸을 채워주세요");
-                    return;
-                }
-                sb.Append(hourInput).Append(colChar).Append(minuteInput).Append(colChar).Append(secondInput).Append(newLineChar);
+                sb.Append(hourInput).Append(colChar).Append(minuteInput).Append(colChar).Append(secondInput)
+                    .Append(blankChar).Append(memoInput).Append(newLineChar);
             }
             if (sb.Length == 0)
             {
@@ -100,7 +105,41 @@ namespace AlarmAndTimer
         }
         private void LoadScript(object sender, RoutedEventArgs e)
         {
+            string? path = Utils.GetScriptPath();
+            if (path == null)
+            {
+                //System.Windows.MessageBox.Show($"뭔가 오류가 있어요.. 다시 시도해 보세요");
+                return;
+            }
+            List<InputItem>? results = Utils.ProcessFileContent(path);
+            if (results == null) { return; }
+            if (TimerList.Children.Count > 0)
+            {
+                // 2. 확인 대화상자 띄우기
+                MessageBoxResult result = System.Windows.MessageBox.Show(
+                    "목록에 항목이 있습니다. 기존 목록을 삭제하고 스크립트를 불러옵니다",
+                    "확인",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
 
+                // 3. '예'를 눌렀을 때만 삭제 로직 실행
+                if (result == MessageBoxResult.Yes)
+                {
+                    TimerList.Children.Clear(); // 자식 전체 삭제
+                }
+                else
+                {
+                    Debug.WriteLine("취소합니다");
+                    return;
+                }
+            }
+            foreach (InputItem item in results)
+            {
+                Debug.WriteLine(item);
+                ManageCard card = new ManageCard(item);
+                TimerList.Children.Add(card);
+            }
         }
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {

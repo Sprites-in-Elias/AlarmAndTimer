@@ -14,32 +14,38 @@
             <ComboBox Name="TypeSelector" 
                       SelectionChanged="TypeSelector_SelectionChanged"
                       Width="60"
-                      MouseDoubleClick="NoPropagation">
-                <ComboBoxItem Content="Timer" />
-                <ComboBoxItem Content="Alarm" />
+                      PreviewMouseDoubleClick="NoPropagation">
+                <ComboBoxItem Name="ComboTimer" Content="Timer" />
+                <ComboBoxItem Name="ComboAlarm" Content="Alarm" />
             </ComboBox>
 
-            <ComboBox Name="AmPmSelector" Visibility="Collapsed" Width="52" MouseDoubleClick="NoPropagation">
-                <ComboBoxItem Content="AM" />
-                <ComboBoxItem Content="PM" />
+            <ComboBox Name="AmPmSelector" Visibility="Collapsed" Width="52" PreviewMouseDoubleClick="NoPropagation">
+                <ComboBoxItem Name="ComboAm" Content="AM" />
+                <ComboBoxItem Name="ComboPm" Content="PM" />
             </ComboBox>
 
             <StackPanel Name="TimeInputBox" Orientation="Horizontal" Visibility="Collapsed">
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="HourInput" Width="24" LostFocus="Hour_LostFocus" PreviewMouseDoubleClick="NoPropagation" />
+                    <TextBox Name="HourInput" Width="24" LostFocus="Hour_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                     <TextBlock Text="시" />
                     <TextBlock Name="GanText" Text="간" Visibility="Collapsed" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="MinuteInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseDoubleClick="NoPropagation" />
+                    <TextBox Name="MinuteInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                     <TextBlock Text="분" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Name="SecondInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseDoubleClick="NoPropagation" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,3,0">
+                    <TextBox Name="SecondInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                     <TextBlock Text="초" />
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="메모:" />
+                    <TextBox Name="MemoInput" Width="90" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
+                </StackPanel>
+
 
                 <Button Content="삭제" Click="DeleteCard_Click"/>
             </StackPanel>

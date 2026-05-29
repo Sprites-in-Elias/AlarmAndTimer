@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         
-        Title="스크립트 매니저" Height="500" Width="440">
+        Title="스크립트 매니저" Height="500" Width="520">
     <Grid Background="#efefef">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -28,9 +28,9 @@
                     <Button Content="저장" Margin="0,0,0,10" Click="SaveScript" />
                     <Button Content="불러오기" Click="LoadScript" />
                 </StackPanel>
-                <Grid VerticalAlignment="Bottom">
+                <!--Grid VerticalAlignment="Bottom">
                     <Button Content="취소" Click="CancelButton_Click" />
-                </Grid>
+                </Grid-->
             </Grid>
         </Grid>
     </Grid>

@@ -45,138 +45,65 @@ namespace AlarmAndTimer
                 MakeAlarmContextMenu.IsEnabled = true;
             }
         }
-
-        private void SelectFile_Click(object sender, RoutedEventArgs e)
+        private void ContextMenuTempButton_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-
-            // 파일 필터 설정 (사용자가 원하는 파일만 보이게)
-            openFileDialog.Filter = "텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*";
-            string lastPath = Properties.Settings.Default.LastOpenedDirectory;
-            if (!string.IsNullOrEmpty(lastPath) && Directory.Exists(lastPath))
-            {
-                openFileDialog.InitialDirectory = lastPath;
-            }
-            // 대화상자 띄우기
-            if (openFileDialog.ShowDialog() == true)
-            {
-                // 사용자가 선택한 파일 경로
-                string selectedPath = openFileDialog.FileName;
-
-                string? folderPath = System.IO.Path.GetDirectoryName(selectedPath);
-                if (folderPath != null)
-                {
-                    Properties.Settings.Default.LastOpenedDirectory = folderPath;
-                    Properties.Settings.Default.Save();
-                }
-
-                // 이제 이 경로를 사용해!
-                ProcessFileContent(selectedPath);
-            }
+            string? path = Utils.GetScriptPath();
+            if (path == null) return;
+            Utils.ProcessFileContent(path);
         }
 
-        private bool CheckTimeValid (string[] timeParts, int hourLimit, string line, int lineNumber)
-        {
-            if (int.TryParse(timeParts[0], out int hour) &&
-                int.TryParse(timeParts[1], out int minute) &&
-                int.TryParse(timeParts[2], out int second))
-            {
-                // 2. 시간(1~12), 분(0~59), 초(0~59) 범위 검사
-                bool isHourValid = (hour >= 1 && hour <= hourLimit);
-                bool isMinuteValid = (minute >= 0 && minute <= 59);
-                bool isSecondValid = (second >= 0 && second <= 59);
 
-                if (!isHourValid)
-                {
-                    System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n시간의 범위는 1~{hourLimit} 입니다", "형식이 맞지 않습니다");
-                    return false;
-                }
-                if (!isMinuteValid)
-                {
-                    System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n분의 범위는 0~59 입니다", "형식이 맞지 않습니다");
-                    return false;
-                }
-                if (!isSecondValid)
-                {
-                    System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n초의 범위는 0~59 입니다", "형식이 맞지 않습니다");
-                    return false;
-                }
-                return true;
-            }
-            else
-            {
-                // 숫자 변환 실패 처리
-                System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n세 번째 단어가 유효한 숫자가 아닙니다 \n ※올바른 형식의 예\n\n================\n   Timer 12:30:00\n   Alarm PM 02:22:12\n================", "형식이 맞지 않습니다");
-                return false;
-            }
-        }
-
-        private void ProcessFileContent(string filePath)
-        {
-            Debug.WriteLine($"{filePath}에서 찾기");
-            int lineNumber = 0;
-            // 파일의 모든 줄을 한 줄씩 읽기
-            foreach (string line in File.ReadLines(filePath))
-            {
-                lineNumber++;
-                Debug.WriteLine($"{lineNumber} : {line}");
-                if (string.IsNullOrWhiteSpace(line)) continue; // 빈 줄은 건너뜀
-
-                // 공백 기준으로 단어 나누기
-                string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                string type = parts[0].ToLower(); // 첫 단어: Timer 또는 Alarm
-                if (type != "timer" && type != "alarm")
-                {
-                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n첫단어는 Alarm 혹은 Timer 입니다\n\n※ 올바른 형식의 예\n\n================\n   Timer 12:30:00\n   Alarm PM 02:22:12\n================", "형식이 맞지 않습니다");
-                    break;
-                }
-                if (type == "timer" && parts.Length != 2)
-                {
-                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n타이머는 하나의 시간 인수만 필요합니다\n\n※올바른 형식의 예\n\n================\n   Timer 12:30:00\n================", "형식이 맞지 않습니다");
-                    break;
-                }
-                if (type == "alarm" && parts.Length != 3)
-                {
-                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n알람은 AM/PM 및 시간 두 개의 인수만 필요합니다\n\n※올바른 형식의 예\n\n================\n   Alarm PM 12:30:00\n================", "형식이 맞지 않습니다");
-                    break;
-                }
-                if (type == "timer")
-                {
-                    string timeData = parts[1];
-                    string[] timeParts = timeData.Split(':');
-                    if (timeParts.Length != 3)
-                    {
-                        System.Windows.MessageBox.Show($"Line{lineNumber} : {line}\n\n타이머의 인수는 :로 구분된 3개의 숫자입니다 \n 예) Timer 12:30:00", "형식이 맞지 않습니다");
-                        break;
-                    }
-                    if (!CheckTimeValid(timeParts, 99, line, lineNumber)) { break; }
-                    Debug.WriteLine($"쓰기성공 {timeParts[0]}, {timeParts[1]}, {timeParts[2]}");
-                }
-                else if (type == "alarm")
-                {
-                    string amPm = parts[1].ToLower(); // AM 또는 PM
-                    string timeData = parts[2];
-                    string[] timeParts = timeData.Split(':');
-                    if (amPm != "am" && amPm != "pm")
-                    {
-                        System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n알람의 첫 번째 인수는 AM 혹은 PM 입니다 \n 예) Alarm PM 12:30:00", "형식이 맞지 않습니다");
-                        break;
-                    }
-                    if (timeParts.Length != 3)
-                    {
-                        System.Windows.MessageBox.Show($"Line{lineNumber} : {line}\n\n알람의 두 번째 인수는 :로 구분된 3개의 숫자입니다 \n 예) Timer 12:30:00", "형식이 맞지 않습니다");
-                        break;
-                    }
-                    if (!CheckTimeValid(timeParts, 12, line, lineNumber)) { break; }
-                    Debug.WriteLine($"쓰기성공 {timeParts[0]}, {timeParts[1]}, {timeParts[2]}");
-                }
-            }
-        }
         private void MangeScript_Click(object sender, EventArgs e)
         {
             ScriptManager editor = new ScriptManager();
             editor.ShowDialog();
+        }
+
+        private void LoadScript_Click(object sender, EventArgs e)
+        {
+            string? path = Utils.GetScriptPath();
+            if (path == null)
+            {
+                //System.Windows.MessageBox.Show($"뭔가 오류가 있어요.. 다시 시도해 보세요");
+                return;
+            }
+            List<InputItem>? results = Utils.ProcessFileContent(path);
+            if (results == null) { return; }
+            if (this.DataContext is MainViewModel vm)
+            {
+                int count = vm.Timers.Count;
+                if (count > 0)
+                {
+                    // 삭제 로직 실행
+                    MessageBoxResult result = System.Windows.MessageBox.Show(
+                    "목록에 항목이 있습니다. 기존 목록을 삭제하고 스크립트를 불러옵니다",
+                    "확인",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                    // 3. '예'를 눌렀을 때만 삭제 로직 실행
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        vm.Timers.Clear();
+                    }
+                    else
+                    {
+                        Debug.WriteLine("취소합니다");
+                        return;
+                    }
+                }
+            }
+            foreach (InputItem item in results)
+            {
+                if (item.Type == "timer")
+                {
+                    StartTimer(item.Second, item.Minute, item.Hour, item.Memo);
+                }
+                else if (item.Type == "alarm")
+                {
+                    StartAlarm(item.Second, item.Minute, item.Hour, item.Memo, item.AmPm);
+                }
+            }
         }
 
         private Point _mouseDownPoint;
@@ -418,22 +345,23 @@ namespace AlarmAndTimer
                 AlarmSecondInput.Text = second.ToString();
             }
         }
-        private void StartTimer_Click(object sender, RoutedEventArgs e)
+        private void StartTimer(string s, string m, string h, string memo)
         {
-            int second = string.IsNullOrWhiteSpace(TimerSecondInput.Text) ? 0 :
-             (int.TryParse(TimerSecondInput.Text, out int s) ? s : -1);
+            Debug.WriteLine($"####{s},, {m},, {h}");
+            int second = string.IsNullOrWhiteSpace(s) ? 0 :
+             (int.TryParse(s, out int ss) ? ss : -1);
 
-            int minute = string.IsNullOrWhiteSpace(TimerMinuteInput.Text) ? 0 :
-                         (int.TryParse(TimerMinuteInput.Text, out int m) ? m : -1);
+            int minute = string.IsNullOrWhiteSpace(m) ? 0 :
+                         (int.TryParse(m, out int mm) ? mm : -1);
 
-            int hour = string.IsNullOrWhiteSpace(TimerHourInput.Text) ? 0 :
-                       (int.TryParse(TimerHourInput.Text, out int h) ? h : -1);
+            int hour = string.IsNullOrWhiteSpace(h) ? 0 :
+                       (int.TryParse(h, out int hh) ? hh : -1);
             if (second == -1 || minute == -1 || hour == -1 || second < 0 || minute < 0 || hour < 0)
             {
+                Debug.WriteLine($"@@{second},, {minute},, {hour}");
                 System.Windows.MessageBox.Show("올바른 숫자를 입력해줘! (예: 1시간 30분 45초 -> 1, 30, 45)");
                 return;
             }
-            string memo = TimerMemo.Text;
             // 리스트에 새 타이머 추가
             var newTimer = new TimerItem(second + minute * 60 + hour * 60 * 60, memo);
             _viewModel.Timers.Add(newTimer);
@@ -441,6 +369,14 @@ namespace AlarmAndTimer
             MakePanelBackground.Visibility = Visibility.Hidden;
             TimerMakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
+        }
+        private void StartTimer_Click(object sender, RoutedEventArgs e)
+        {
+            string s = TimerSecondInput.Text;
+            string m = TimerMinuteInput.Text;
+            string h = TimerHourInput.Text;
+            string memo = TimerMemo.Text;
+            StartTimer(s, m, h, memo);
         }
         private void TimerMakeCancel_Click(object sender, RoutedEventArgs e)
         {
@@ -464,26 +400,31 @@ namespace AlarmAndTimer
                 else { button.Content = "AM"; }
             }
         }
-        private void StartAlarm_Click(object sender, RoutedEventArgs e)
+        private void StartAlarm(string s, string m, string h, string memo, string? amPm)
         {
-            int second = string.IsNullOrWhiteSpace(AlarmSecondInput.Text) ? 0 :
-             (int.TryParse(AlarmSecondInput.Text, out int s) ? s : -1);
+            // 강제 선택이 되있기 때문에 만족할 일이 없는 조건문
+            if (amPm == null || amPm.Length == 0)
+            {
+                System.Windows.MessageBox.Show("AM/PM을 선택해 주세요.");
+                return;
+            }
+            int second = string.IsNullOrWhiteSpace(s) ? 0 :
+             (int.TryParse(s, out int ss) ? ss : -1);
 
-            int minute = string.IsNullOrWhiteSpace(AlarmMinuteInput.Text) ? 0 :
-                         (int.TryParse(AlarmMinuteInput.Text, out int m) ? m : -1);
+            int minute = string.IsNullOrWhiteSpace(m) ? 0 :
+                         (int.TryParse(m, out int mm) ? mm : -1);
 
-            int hour = string.IsNullOrWhiteSpace(AlarmHourInput.Text) ? 0 :
-                       (int.TryParse(AlarmHourInput.Text, out int h) ? h : -1);
-
-            string memo = AlarmMemo.Text;
+            int hour = string.IsNullOrWhiteSpace(h) ? 0 :
+                       (int.TryParse(h, out int hh) ? hh : -1);
             if (second == -1 || minute == -1 || hour == -1 || second < 0 || minute < 0 || hour < 0)
             {
+                Debug.WriteLine($"!!{second},, {minute},, {hour}");
                 System.Windows.MessageBox.Show("올바른 숫자를 입력해줘! (예: 1시간 30분 45초 -> 1, 30, 45)");
                 return;
             }
 
-            if (AmPmButton.Content?.ToString() == "PM" && hour < 12) { hour += 12; }
-            if (AmPmButton.Content?.ToString() == "AM" && hour == 12) { hour = 0; }
+            if (amPm == "pm" && hour < 12) { hour += 12; }
+            if (amPm == "am" && hour == 12) { hour = 0; }
 
             DateTime now = DateTime.Now;
             DateTime alarmTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
@@ -505,6 +446,15 @@ namespace AlarmAndTimer
             MakePanelBackground.Visibility = Visibility.Hidden;
             AlarmMakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
+        }
+        private void StartAlarm_Click(object sender, RoutedEventArgs e)
+        {
+            string s = AlarmSecondInput.Text;
+            string m = AlarmMinuteInput.Text;
+            string h = AlarmHourInput.Text;
+            string memo = AlarmMemo.Text;
+            string? amPm = AmPmButton.Content?.ToString().ToLower();
+            StartAlarm(s, m, h, memo, amPm);            
         }
         private void AlarmMakeCancel_Click(object sender, RoutedEventArgs e)
         {
@@ -546,108 +496,6 @@ namespace AlarmAndTimer
         {
             Timers.Add(new TimerItem(600, "qqq"));
             Timers.Add(new TimerItem(100, ""));
-        }
-    }
-    public class TimerItem : INotifyPropertyChanged
-    {
-        private DispatcherTimer _individualTimer;
-        private int _remainingSeconds;
-        private bool _isPaused;
-        private String _timerMemo;
-
-        public int RemainingSeconds
-        {
-            get => _remainingSeconds;
-            set
-            {
-                if (_remainingSeconds != value)
-                {
-                    _remainingSeconds = value;
-                    OnPropertyChanged(nameof(RemainingSeconds));
-                    OnPropertyChanged(nameof(TimeLeftString));
-                }
-            }
-        }
-
-        public string TimerMemo
-        {
-            get => _timerMemo;
-            set
-            {
-                _timerMemo = value;
-                OnPropertyChanged(nameof(TimerMemo));
-            }
-        }
-
-        public string TimeLeftString
-        {
-            get
-            {
-                TimeSpan t = TimeSpan.FromSeconds(RemainingSeconds);
-                if (RemainingSeconds <= 0) return "종료";
-                return string.Format("{0:D2}:{1:D2}:{2:D2}", t.Hours, t.Minutes, t.Seconds);
-            }
-        }
-        public string EndTimeString
-        {
-            get
-            {
-                return DateTime.Now.AddSeconds(RemainingSeconds).ToString("HH:mm:ss");
-            }
-        }
-
-        public string PauseButtonText => _isPaused ? "재개" : "정지";
-
-        public TimerItem(int initialSeconds, string memo)
-        {
-            _isPaused = false;
-            RemainingSeconds = initialSeconds;
-
-            _individualTimer = new DispatcherTimer();
-            _individualTimer.Interval = TimeSpan.FromSeconds(1);
-            _individualTimer.Tick += IndividualTimer_Tick;
-            _timerMemo += memo;
-
-            _individualTimer.Start();
-        }
-
-        private void IndividualTimer_Tick(object? sender, EventArgs e)
-        {
-            if (RemainingSeconds > 0)
-            {
-                RemainingSeconds--;
-
-                if (RemainingSeconds == 0)
-                {
-                    System.Media.SystemSounds.Asterisk.Play();
-                    _individualTimer.Stop(); 
-                }
-            }
-        }
-
-
-
-        public void StopTimer()
-        {
-            _individualTimer?.Stop();
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-        internal void TogglePause()
-        {
-            if (_isPaused)
-            {
-                _individualTimer.Start();
-                OnPropertyChanged(nameof(EndTimeString));
-            }
-            else
-            {
-                _individualTimer.Stop();
-            }
-            _isPaused = !_isPaused;
-            OnPropertyChanged(nameof(PauseButtonText));
         }
     }
 }
