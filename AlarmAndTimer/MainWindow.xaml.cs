@@ -79,7 +79,11 @@ namespace AlarmAndTimer
             Utils.ProcessFileContent(path);
         }
         */
-
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            Settings st = new Settings();
+            st.ShowDialog();
+        }
         private void MangeScript_Click(object sender, EventArgs e)
         {
             ScriptManager editor = new ScriptManager();
@@ -200,12 +204,27 @@ namespace AlarmAndTimer
             this.Topmost = false;
         }
         private void AlwaysTop_HyperLink(object sender, RoutedEventArgs e) { AlwaysTop_CheckBox.IsChecked = !AlwaysTop_CheckBox.IsChecked; }
-        private void TrayMenu_HyperLink(object sender, RoutedEventArgs e)
+        private void HideInTrayMenu()
         {
             this.Hide();
             trayIcon!.Visible = true;
         }
-        private void Minimize_HyperLink(object sender, RoutedEventArgs e) { this.WindowState = WindowState.Minimized; }
+        private void TrayMenu_HyperLink(object sender, RoutedEventArgs e) { HideInTrayMenu(); }
+        private void HideFromTaskBar(object sender, RoutedEventArgs e)
+        {
+            this.ShowInTaskbar = false;
+        }
+        private void Minimize_HyperLink(object sender, RoutedEventArgs e) {
+            if (!this.ShowInTaskbar)
+            {
+                this.ShowInTaskbar = true;
+                HideInTrayMenu();
+            }
+            else
+            {
+                this.WindowState = WindowState.Minimized;
+            }   
+        }
         private void CompletelyClose_HyperLink(object sender, RoutedEventArgs e) { System.Windows.Application.Current.Shutdown(); }
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -433,6 +452,7 @@ namespace AlarmAndTimer
             //SubButtonsPanel.Visibility = Visibility.Collapsed;
             MakePanelBackground.Visibility = Visibility.Visible;
             AmPmButton.Visibility = Visibility.Visible;
+            GanTextBlock.Visibility = Visibility.Visible;
             AlarmTail.Visibility = Visibility.Visible;
             TimerTail.Visibility = Visibility.Collapsed;
             MakePanel.Visibility = Visibility.Visible;
@@ -575,6 +595,7 @@ namespace AlarmAndTimer
             Memo.Text = "";
             MakePanelBackground.Visibility = Visibility.Visible;
             AmPmButton.Visibility = Visibility.Collapsed;
+            GanTextBlock.Visibility = Visibility.Collapsed;
             AlarmTail.Visibility = Visibility.Collapsed;
             TimerTail.Visibility = Visibility.Visible;
             MakePanel.Visibility = Visibility.Visible;

@@ -19,7 +19,7 @@
             <MenuItem Name="MakeTimerContextMenu" Header="타이머 생성" Click="OpenTimerPanel_Click" />
             <MenuItem Name="MakeAlarmContextMenu" Header="알람 생성" Click="OpenAlarmPanel_Click" />
             <Separator />
-            <MenuItem Header="설정" />
+            <MenuItem Header="설정" Click="Settings_Click" />
             <MenuItem Header="스크립트 관리" Click="MangeScript_Click"/>
             <MenuItem Header="스크립트 불러오기" Click="LoadScript_Click" />
             <!--<MenuItem Header="임시" Click="ContextMenuTempButton_Click" />-->
@@ -30,7 +30,7 @@
                   Checked="AlwaysTop_Checked" 
                   Unchecked="AlwaysTop_Unchecked" />
             <MenuItem Header="트레이로 보내기" Click="TrayMenu_HyperLink" />
-            <MenuItem Header="시작표시줄에서 숨기기" />
+            <MenuItem Header="시작표시줄에서 숨기기" Click="HideFromTaskBar" />
             <MenuItem Header="최소화" Click="Minimize_HyperLink" />
             <MenuItem Header="완전히 종료" Click="CompletelyClose_HyperLink" />
         </ContextMenu>
@@ -189,9 +189,9 @@
             <StackPanel.Effect>
                 <DropShadowEffect 
                     Color="Gray" 
-                    BlurRadius="10" 
-                    ShadowDepth="3" 
-                    Opacity="0.4" 
+                    BlurRadius="30" 
+                    ShadowDepth="1" 
+                    Opacity="0.3" 
                     Direction="90" />
             </StackPanel.Effect>
             <StackPanel.RenderTransform>
@@ -229,7 +229,7 @@
                                 </Grid>
 
                                 <TextBlock Grid.Column="2" Text="시" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13"/>
-                                <TextBlock Grid.Column="2" Text="간" VerticalAlignment="Center" Margin="-2,0,2,0" Foreground="#555555" FontSize="13"/>
+                                <TextBlock Name="GanTextBlock" Grid.Column="2" Text="간" VerticalAlignment="Center" Margin="-2,0,2,0" Foreground="#555555" FontSize="13"/>
 
                                 <TextBox Grid.Column="3" 
                                     Name="MinuteInput"
@@ -267,7 +267,7 @@
                                 <TextBlock Name="AlarmTail" Grid.Column="8" Text="초에" VerticalAlignment="Center" Margin="2,0,2,0" Foreground="#555555" FontSize="13" Visibility="Collapsed"/>
                             </StackPanel>
                         </Grid>
-                        <Grid>
+                        <Grid Margin="0,6,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="*" />
@@ -278,9 +278,9 @@
                                 Grid.Column="1"
                                 MinWidth="120" />
                         </Grid>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel Margin="0,6,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button Name="StartButton" Content="만들기" Click="StartButton_Click"></Button>
-                            <Button Content="취소" Click="MakeCancel_Click"></Button>
+                            <Button Margin="6,0,0,0" Content="취소" Click="MakeCancel_Click"></Button>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

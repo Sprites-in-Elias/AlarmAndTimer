@@ -15,18 +15,18 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="18,18,18,18" Background="#ffffff">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" MouseDoubleClick="MakeManageCard">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Name="TimerList" Orientation="Vertical">
                     </StackPanel>
-                 </ScrollViewer> 
+                 </ScrollViewer>
             </Border>
         </Grid>
         <Grid Grid.Column="1">
             <Grid Margin="0,18,18,18">
-                <TextBlock Text="dddd"></TextBlock>
                 <StackPanel Orientation="Vertical">
-                    <Button Content="저장" Margin="0,0,0,10" Click="SaveScript" />
-                    <Button Content="불러오기" Click="LoadScript" />
+                    <Button Content="저장" Click="SaveScript" />
+                    <Button Content="불러오기" Margin="0,10,0,0" Click="LoadScript" />
+                    <Button Content="열 추가" Margin="0,40,0,0" Click="MakeManageCard"/>
                 </StackPanel>
                 <!--Grid VerticalAlignment="Bottom">
                     <Button Content="취소" Click="CancelButton_Click" />
