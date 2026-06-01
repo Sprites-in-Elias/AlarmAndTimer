@@ -145,5 +145,19 @@ namespace AlarmAndTimer
         {
             Close();
         }
+        /*
+        public void MoveTimerItem(UIElement item, int direction)
+        {
+            int index = TimerList.Children.IndexOf(item);
+            int newIndex = index + direction;
+            Debug.WriteLine($"{index} ,, {newIndex}");
+
+            if (newIndex >= 0 && newIndex < TimerList.Children.Count)
+            {
+                TimerList.Children.RemoveAt(index);
+                TimerList.Children.Insert(newIndex, item);
+            }
+        }
+        */
     }
 }

@@ -1,21 +1,22 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Win32;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Windows.Forms;
 using Point = System.Windows.Point;
-using Microsoft.Win32;
-using System.IO;
 
 namespace AlarmAndTimer
 {
@@ -31,6 +32,30 @@ namespace AlarmAndTimer
 
             TimerListView.ItemsSource = _viewModel.Timers;
         }
+
+        private void ShowStackPanelWithAnimation()
+        {
+            DoubleAnimation moveAnim = new DoubleAnimation(50, 0, TimeSpan.FromSeconds(0.5));
+            moveAnim.EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseOut };
+            DoubleAnimation fadeAnim = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.5));
+            MoveTransform.BeginAnimation(TranslateTransform.YProperty, moveAnim);
+            MakePanelBackground.BeginAnimation(OpacityProperty, fadeAnim);
+        }
+        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            AlwaysTopContextMenu.IsChecked = this.Topmost;
+            if (MakePanel.Visibility == Visibility.Visible)
+            {
+                MakeTimerContextMenu.IsEnabled = false;
+                MakeAlarmContextMenu.IsEnabled = false;
+            }
+            else
+            {
+                MakeTimerContextMenu.IsEnabled = true;
+                MakeAlarmContextMenu.IsEnabled = true;
+            }
+        }
+        /*
         private void ContextMenu_Opened(object sender, RoutedEventArgs e)
         {
             AlwaysTopContextMenu.IsChecked = this.Topmost;
@@ -45,13 +70,15 @@ namespace AlarmAndTimer
                 MakeAlarmContextMenu.IsEnabled = true;
             }
         }
+        */
+        /*
         private void ContextMenuTempButton_Click(object sender, RoutedEventArgs e)
         {
             string? path = Utils.GetScriptPath();
             if (path == null) return;
             Utils.ProcessFileContent(path);
         }
-
+        */
 
         private void MangeScript_Click(object sender, EventArgs e)
         {
@@ -138,7 +165,7 @@ namespace AlarmAndTimer
             if (!_isDragging)
             {
                 var element = e.Source as FrameworkElement;
-                if (element != null && element.Name == "MakePanelBackgroundBorder")
+                if (element != null && element.Name == "MakePanelBackgroundBorder")  // 여긴 메이크 판넬을 드래그 할때 잘 적용된건지 확인해야겠는데
                 {
                     CloseMakePanel();
                 }
@@ -152,7 +179,8 @@ namespace AlarmAndTimer
             trayIcon.Icon = System.Drawing.SystemIcons.Application;
             trayIcon.Text = "타이머";
 
-            trayIcon.DoubleClick += (s, e) => {
+            trayIcon.DoubleClick += (s, e) =>
+            {
                 this.Show();
                 this.WindowState = WindowState.Normal;
                 trayIcon.Visible = false;
@@ -162,7 +190,7 @@ namespace AlarmAndTimer
         {
             Debug.WriteLine("켜짐");
             AlwaysTop_CheckBox.IsChecked = true;
-            
+
             this.Topmost = true;
         }
         private void AlwaysTop_Unchecked(object sender, RoutedEventArgs e)
@@ -190,6 +218,117 @@ namespace AlarmAndTimer
                 SubButtonsPanel.Visibility = Visibility.Visible;
             }
         }
+        private void HourUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (StartButton.Tag.ToString() == "Timer")
+            {
+                if (int.TryParse(HourInput.Text, out int hour))
+                {
+                    hour = (hour + 1);
+                    if (hour == 100) return;
+                    HourInput.Text = hour.ToString();
+                }
+                else if (string.IsNullOrWhiteSpace(HourInput.Text))
+                {
+                    HourInput.Text = "0";
+                }
+            }
+            else if (StartButton.Tag.ToString() == "Alarm")
+            {
+                if (int.TryParse(HourInput.Text, out int hour))
+                {
+                    hour = (hour + 1);
+                    if (hour == 13) { hour = 1; }
+                    HourInput.Text = hour.ToString();
+                }
+            }
+        }
+        private void HourDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (StartButton.Tag.ToString() == "Timer")
+            {
+                if (int.TryParse(HourInput.Text, out int hour))
+                {
+                    hour = (hour - 1);
+                    if (hour == -1) return;
+                    HourInput.Text = hour.ToString();
+                }
+                else if (string.IsNullOrWhiteSpace(HourInput.Text))
+                {
+                    HourInput.Text = "0";
+                }
+            }
+            else if (StartButton.Tag.ToString() == "Alarm")
+            {
+                if (int.TryParse(HourInput.Text, out int hour))
+                {
+                    hour = (hour - 1);
+                    if (hour == 0) { hour = 12; }
+                    HourInput.Text = hour.ToString();
+                }
+            }
+        }
+        private void MinuteUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(MinuteInput.Text, out int minute))
+            {
+                minute = (minute + 1) % 60;
+                MinuteInput.Text = minute.ToString();
+            }
+            else if (string.IsNullOrWhiteSpace(MinuteInput.Text))
+            {
+                MinuteInput.Text = "0";
+            }
+        }
+        private void MinuteDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(MinuteInput.Text, out int minute))
+            {
+                minute = (minute - 1 + 60) % 60;
+                MinuteInput.Text = minute.ToString();
+            }
+            else if (string.IsNullOrWhiteSpace(MinuteInput.Text))
+            {
+                MinuteInput.Text = "0";
+            }
+        }
+        private void SecondUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(SecondInput.Text, out int second))
+            {
+                second = (second + 1) % 60;
+                SecondInput.Text = second.ToString();
+            }
+            else if (string.IsNullOrWhiteSpace(SecondInput.Text))
+            {
+                SecondInput.Text = "0";
+            }
+        }
+        private void SecondDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(SecondInput.Text, out int second))
+            {
+                second = (second - 1 + 60) % 60;
+                SecondInput.Text = second.ToString();
+            }
+            else if (string.IsNullOrWhiteSpace(SecondInput.Text))
+            {
+                SecondInput.Text = "0";
+            }
+        }
+        private void StartButton_Click(object sender, RoutedEventArgs args)
+        {
+            Debug.WriteLine(StartButton.Tag);
+            if (StartButton.Tag.ToString() == "Alarm")
+            {
+                StartAlarm(SecondInput.Text, MinuteInput.Text, HourInput.Text, Memo.Text, AmPmButton.Content.ToString()?.ToLower());
+            }
+            else if (StartButton.Tag.ToString() == "Timer")
+            {
+                StartTimer(SecondInput.Text, MinuteInput.Text, HourInput.Text, Memo.Text);
+            }
+        }
+        /*
         private void TimerHourUpButton_Click(object sender, RoutedEventArgs e)
         {
             if (int.TryParse(TimerHourInput.Text, out int hour))
@@ -264,7 +403,44 @@ namespace AlarmAndTimer
                 TimerSecondInput.Text = "0";
             }
         }
+        */
+        private void OpenAlarmPanel_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime now = DateTime.Now;
 
+            int tempHour = now.Hour;
+            if (tempHour > 12)
+            {
+                tempHour -= 12;
+                AmPmButton.Content = "PM";
+            }
+            else if (tempHour == 12)
+            {
+                AmPmButton.Content = "PM";
+            }
+            else if (tempHour == 0)
+            {
+                tempHour = 12;
+                AmPmButton.Content = "AM";
+            }
+            else { AmPmButton.Content = "AM"; }
+            HourInput.Text = tempHour.ToString();
+            MinuteInput.Text = now.Minute.ToString();
+            SecondInput.Text = now.Second.ToString();
+            Memo.Text = "";
+
+            //AddButtonPackage.Visibility = Visibility.Collapsed;
+            //SubButtonsPanel.Visibility = Visibility.Collapsed;
+            MakePanelBackground.Visibility = Visibility.Visible;
+            AmPmButton.Visibility = Visibility.Visible;
+            AlarmTail.Visibility = Visibility.Visible;
+            TimerTail.Visibility = Visibility.Collapsed;
+            MakePanel.Visibility = Visibility.Visible;
+            StartButton.Tag = "Alarm";
+            ShowStackPanelWithAnimation();
+        }
+
+        /*
         private void OpenAlarmPanel_Click(object sender, RoutedEventArgs e)
         {
             DateTime now = DateTime.Now;
@@ -294,6 +470,8 @@ namespace AlarmAndTimer
             MakePanelBackground.Visibility = Visibility.Visible;
             AlarmMakePanel.Visibility = Visibility.Visible;
         }
+        */
+        /*
         private void AlarmHourUpButton_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("gggg");
@@ -345,6 +523,7 @@ namespace AlarmAndTimer
                 AlarmSecondInput.Text = second.ToString();
             }
         }
+        */
         private void StartTimer(string s, string m, string h, string memo)
         {
             Debug.WriteLine($"####{s},, {m},, {h}");
@@ -367,9 +546,10 @@ namespace AlarmAndTimer
             _viewModel.Timers.Add(newTimer);
 
             MakePanelBackground.Visibility = Visibility.Hidden;
-            TimerMakePanel.Visibility = Visibility.Hidden;
+            MakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
         }
+        /*
         private void StartTimer_Click(object sender, RoutedEventArgs e)
         {
             string s = TimerSecondInput.Text;
@@ -378,12 +558,30 @@ namespace AlarmAndTimer
             string memo = TimerMemo.Text;
             StartTimer(s, m, h, memo);
         }
+        */
+        /*
         private void TimerMakeCancel_Click(object sender, RoutedEventArgs e)
         {
             MakePanelBackground.Visibility = Visibility.Hidden;
             TimerMakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
         }
+        */
+        private void OpenTimerPanel_Click(object sender, RoutedEventArgs e)
+        {
+            HourInput.Text = "";
+            MinuteInput.Text = "";
+            SecondInput.Text = "";
+            Memo.Text = "";
+            MakePanelBackground.Visibility = Visibility.Visible;
+            AmPmButton.Visibility = Visibility.Collapsed;
+            AlarmTail.Visibility = Visibility.Collapsed;
+            TimerTail.Visibility = Visibility.Visible;
+            MakePanel.Visibility = Visibility.Visible;
+            StartButton.Tag = "Timer";
+            ShowStackPanelWithAnimation();
+        }
+        /*
         private void OpenTimerPanel_Click(object sender, RoutedEventArgs e)
         {
             //AddButtonPackage.Visibility = Visibility.Collapsed;
@@ -391,7 +589,7 @@ namespace AlarmAndTimer
             MakePanelBackground.Visibility = Visibility.Visible;
             TimerMakePanel.Visibility = Visibility.Visible;
         }
-
+        */
         private void ToggleAmPm_Click(Object sender, RoutedEventArgs e)
         {
             if (sender is System.Windows.Controls.Button button)
@@ -444,9 +642,10 @@ namespace AlarmAndTimer
             _viewModel.Timers.Add(new TimerItem((int)totalSecondsLeft, memo));
 
             MakePanelBackground.Visibility = Visibility.Hidden;
-            AlarmMakePanel.Visibility = Visibility.Hidden;
+            MakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
         }
+        /*
         private void StartAlarm_Click(object sender, RoutedEventArgs e)
         {
             string s = AlarmSecondInput.Text;
@@ -456,6 +655,36 @@ namespace AlarmAndTimer
             string? amPm = AmPmButton.Content?.ToString().ToLower();
             StartAlarm(s, m, h, memo, amPm);            
         }
+        */
+        private void MakeCancel_Click(object sender, RoutedEventArgs e)
+        {
+            CloseMakePanel();
+        }
+        private void CloseMakePanel()
+        {
+            /*
+            MakePanelBackground.Visibility = Visibility.Hidden;
+            MakePanel.Visibility = Visibility.Hidden;
+            //AddButtonPackage.Visibility = Visibility.Visible;
+            */
+            DoubleAnimation hideAnim = new DoubleAnimation(0, MakePanel.ActualHeight, TimeSpan.FromSeconds(0.3));
+            hideAnim.EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseIn };
+
+            DoubleAnimation fadeAnim = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.3));
+
+            // 2. 애니메이션 완료 이벤트 등록
+            hideAnim.Completed += (s, e) =>
+            {
+                // 애니메이션이 완전히 끝난 후 실행됨
+                MakePanel.Visibility = Visibility.Hidden;
+                MakePanelBackground.Visibility = Visibility.Hidden;
+            };
+
+            // 3. 실행
+            MoveTransform.BeginAnimation(TranslateTransform.YProperty, hideAnim);
+            MakePanelBackground.BeginAnimation(OpacityProperty, fadeAnim);
+        }
+        /*
         private void AlarmMakeCancel_Click(object sender, RoutedEventArgs e)
         {
             MakePanelBackground.Visibility = Visibility.Hidden;
@@ -469,12 +698,38 @@ namespace AlarmAndTimer
             AlarmMakePanel.Visibility = Visibility.Hidden;
             //AddButtonPackage.Visibility = Visibility.Visible;
         }
+        */
         private void DeleteTimer_Click(object sender, RoutedEventArgs e)
         {
             if (sender is System.Windows.Controls.Button button && button.DataContext is TimerItem timerItem)
             {
                 timerItem.StopTimer();
                 _viewModel.Timers.Remove(timerItem);
+            }
+        }
+        private void MoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as System.Windows.Controls.Button;
+            TimerItem? item = button!.Tag as TimerItem; // 이게 바로 해당 열의 데이터!
+            var vm = this.DataContext as MainViewModel;
+            var index = vm!.Timers.IndexOf(item!);
+
+            if (index > 0)
+            {
+                vm.Timers.Move(index, index - 1);
+            }
+        }
+
+        private void MoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as System.Windows.Controls.Button;
+            TimerItem? item = button!.Tag as TimerItem;
+            var vm = this.DataContext as MainViewModel;
+            int index = vm!.Timers.IndexOf(item!);
+
+            if (index < vm.Timers.Count - 1)
+            {
+                vm.Timers.Move(index, index + 1);
             }
         }
         private void PauseTimer_Click(object sender, RoutedEventArgs e)
@@ -492,10 +747,10 @@ namespace AlarmAndTimer
     }
     public class DesignViewModel : MainViewModel
     {
-        public DesignViewModel()
-        {
-            Timers.Add(new TimerItem(600, "qqq"));
-            Timers.Add(new TimerItem(100, ""));
-        }
+        //    public DesignViewModel()
+        //    {
+        //        Timers.Add(new TimerItem(600, "qqq"));
+        //        Timers.Add(new TimerItem(100, ""));
+        //    }
     }
 }

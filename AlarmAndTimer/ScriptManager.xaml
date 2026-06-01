@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         
-        Title="스크립트 매니저" Height="500" Width="520">
+        Title="스크립트 매니저" Height="450" Width="605">
     <Grid Background="#efefef">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

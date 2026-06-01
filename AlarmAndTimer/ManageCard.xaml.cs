@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Button = System.Windows.Controls.Button;
 using MessageBox = System.Windows.MessageBox;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -228,6 +229,43 @@ namespace AlarmAndTimer
         {
             Debug.WriteLine("낫프로파게이션");
             e.Handled = true;
+        }
+
+        private T? FindVisualParent<T>(DependencyObject obj) where T : DependencyObject
+        {
+            DependencyObject parent = VisualTreeHelper.GetParent(obj);
+            while (parent != null && !(parent is T))
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+            return parent as T;
+        }
+        private void MoveCard(object sender, RoutedEventArgs e)
+        {
+            // 1. 나(ManageCard)를 품고 있는 TimerList(StackPanel)를 직접 찾음
+            var parentStackPanel = FindVisualParent<StackPanel>(this);
+
+            if (parentStackPanel != null)
+            {
+                Button btn = (Button)sender;
+                int direction = int.TryParse(btn.Tag?.ToString(), out int d) ? d : 0;
+
+                // 2. 현재 내 인덱스를 찾음
+                int index = parentStackPanel.Children.IndexOf(this);
+                int newIndex = index + direction;
+
+                // 3. 순서 변경
+                if (newIndex >= 0 && newIndex < parentStackPanel.Children.Count)
+                {
+                    parentStackPanel.Children.RemoveAt(index);
+                    parentStackPanel.Children.Insert(newIndex, this);
+                    Debug.WriteLine($"이동 성공! {index} -> {newIndex}");
+                }
+            }
+            else
+            {
+                Debug.WriteLine("에러: 부모 StackPanel을 찾지 못했어!");
+            }
         }
     }
 }

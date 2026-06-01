@@ -19,35 +19,38 @@
                 <ComboBoxItem Name="ComboAlarm" Content="Alarm" />
             </ComboBox>
 
-            <ComboBox Name="AmPmSelector" Visibility="Collapsed" Width="52" PreviewMouseDoubleClick="NoPropagation">
+            <ComboBox Name="AmPmSelector" Visibility="Collapsed" Width="52" PreviewMouseDoubleClick="NoPropagation" Margin="5,0,0,0">
                 <ComboBoxItem Name="ComboAm" Content="AM" />
                 <ComboBoxItem Name="ComboPm" Content="PM" />
             </ComboBox>
 
             <StackPanel Name="TimeInputBox" Orientation="Horizontal" Visibility="Collapsed">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBox Name="HourInput" Width="24" LostFocus="Hour_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                     <TextBlock Text="시" />
                     <TextBlock Name="GanText" Text="간" Visibility="Collapsed" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBox Name="MinuteInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                     <TextBlock Text="분" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="0,0,3,0">
+                <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBox Name="SecondInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                     <TextBlock Text="초" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBlock Text="메모:" />
                     <TextBox Name="MemoInput" Width="90" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                 </StackPanel>
 
 
-                <Button Content="삭제" Click="DeleteCard_Click"/>
+                <Button Content="삭제" Margin="5,0,0,0" Click="DeleteCard_Click"/>
+                <Button Content="▲" Margin="5,0,0,0" VerticalAlignment="Center" Tag="-1" Click="MoveCard"/>
+                <Button Content="▼" Margin="5,0,0,0" VerticalAlignment="Center" Tag="1" Click="MoveCard"/>
+
             </StackPanel>
         </StackPanel>
     </Grid>
