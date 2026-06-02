@@ -55,6 +55,11 @@ namespace AlarmAndTimer
                     if (hourInput == null || hourInput.Length == 0) hourInput = "0";
                     if (minuteInput == null || minuteInput.Length == 0) minuteInput = "0";
                     if (secondInput == null || secondInput.Length == 0) secondInput = "0";
+                    if (hourInput == "0" && minuteInput == "0" && secondInput == "0")
+                    {
+                        System.Windows.MessageBox.Show($"Line ({index}) : 빈칸을 채워주세요");
+                        return;
+                    }
                 }
                 else if (type == "alarm")
                 {
@@ -105,7 +110,7 @@ namespace AlarmAndTimer
         }
         private void LoadScript(object sender, RoutedEventArgs e)
         {
-            string? path = Utils.GetScriptPath();
+            string? path = Utils.GetScriptPath("텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*");
             if (path == null)
             {
                 //System.Windows.MessageBox.Show($"뭔가 오류가 있어요.. 다시 시도해 보세요");

@@ -5,17 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace AlarmAndTimer
 {
     public static class Utils
     {
-        public static string? GetScriptPath()
+        private static MediaPlayer alarmPlayer = new MediaPlayer();
+        public static string? GetScriptPath(string fileType)
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
 
             // 파일 필터 설정 (사용자가 원하는 파일만 보이게)
-            openFileDialog.Filter = "텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*";
+            openFileDialog.Filter = fileType;
             string lastPath = Properties.Settings.Default.LastOpenedDirectory;
             if (!string.IsNullOrEmpty(lastPath) && Directory.Exists(lastPath))
             {
@@ -160,6 +162,68 @@ namespace AlarmAndTimer
                 return null;
             }
             return results;
+        }
+
+        public static void PlayAlarm()
+        {
+            AlarmPlayerClose();
+            if (Properties.Settings.Default.RepeatSound) alarmPlayer.MediaEnded += AlarmPlayer_MediaEnded;
+            Debug.WriteLine("왔음");
+            if (Properties.Settings.Default.UseCustomSound) PlayCustomAlarm();
+            else PlayDefaultAlarm();
+        }
+        public static void PlayDefaultAlarm()
+        {
+            string defaultSoundName = Properties.Settings.Default.DefaultSoundPath;
+            Uri uri = new Uri($"Resources/SoundPack/{defaultSoundName}.mp3", UriKind.Relative);
+
+            var streamInfo = System.Windows.Application.GetResourceStream(uri);
+            if (streamInfo == null)
+            {
+                Debug.WriteLine("파일을 찾을 수 없음!");
+                return;
+            }
+
+            // 임시 파일로 복사 (MediaPlayer는 파일 경로를 선호함)
+            string tempPath = Path.Combine(Path.GetTempPath(), "alarm_temp.mp3");
+            using (var fileStream = File.Create(tempPath))
+            {
+                streamInfo.Stream.CopyTo(fileStream);
+            }
+
+            alarmPlayer.Open(new Uri(tempPath));
+            alarmPlayer.Volume = int.Parse(Properties.Settings.Default.SoundVolume) / 100.0;
+            alarmPlayer.Play();
+        }
+        public static void PlayCustomAlarm()
+        {
+            string filePath = Properties.Settings.Default.CustomSoundPath;
+            if (filePath == null)
+            {
+                MessageBox.Show("등록된 음원이 없어요");
+            }
+            else if (!System.IO.File.Exists(filePath))
+            {
+                Debug.WriteLine("파일을 찾을 수 없어요");
+                return;
+            }
+            alarmPlayer.Open(new Uri(filePath!, UriKind.Absolute));
+
+            // 4. 재생
+            alarmPlayer.Volume = int.Parse(Properties.Settings.Default.SoundVolume) / 100.0;
+            alarmPlayer.Play();
+        }
+        private static void AlarmPlayer_MediaEnded(object sender, EventArgs e)
+        {
+            // 재생이 끝나면 다시 처음으로 돌리고 재생
+            alarmPlayer.Position = TimeSpan.Zero;
+            alarmPlayer.Play();
+        }
+        public static void AlarmPlayerClose()
+        {
+            alarmPlayer.MediaEnded -= AlarmPlayer_MediaEnded;
+            alarmPlayer.Stop();
+            alarmPlayer.Close();
         }
     }
 }

@@ -6,35 +6,131 @@
         xmlns:local="clr-namespace:AlarmAndTimer"
         mc:Ignorable="d"
         
+        Background="{DynamicResource BackgroundColor}"
         ResizeMode="NoResize"
         Title="설정" Height="450" Width="360">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+        </Style>
+    </Window.Resources>
     <Grid>
         <StackPanel Margin="8">
-            <StackPanel>
-                <TextBlock>
-                    다크모드
-                </TextBlock>
+            <StackPanel VerticalAlignment="Bottom" Margin="10">
+                <TextBlock Text="간단한 알람 및 타이머" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" />
+                <TextBlock x:Name="VersionText" FontSize="10" Foreground="Gray" HorizontalAlignment="Center" />
             </StackPanel>
-            <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="CurrentTime_CheckBox" 
+                  Content="현재 시간 표시" 
+                  Checked="CurrentTime_Changed" 
+                  Unchecked="CurrentTime_Changed"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>색상모드</TextBlock>
+                <ComboBox Name="ColorModeSelector" 
+                      SelectionChanged="ColorMode_SelectionChanged">
+                    <ComboBoxItem Name="LightMode" Tag="Light" Content="라이트모드" />
+                    <ComboBoxItem Name="DarkMode" Tag="Dark" Content="다크모드" />
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                    알림 방식
+                </TextBlock>
+                <CheckBox 
+                    x:Name="SoundUse_CheckBox"
+                    Content="소리"
+                    Checked="SoundUse_Changed" 
+                    Unchecked="SoundUse_Changed"/>
+                <!--CheckBox Content="팝업"></CheckBox-->
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                    알림 소리 크기(1~100)
+                </TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="-10" Click="AdjustValue_Click" Tag="-10" Width="25"/>
+                    <Button Content="-1" Click="AdjustValue_Click" Tag="-1" Width="25"/>
+
+                    <TextBox x:Name="VolumeValueTextBox" Width="30" Margin="6,0" TextAlignment="Center" 
+                            VerticalContentAlignment="Center" GotFocus="TextBox_GotFocus" />
+
+                    <Button Content="+1" Click="AdjustValue_Click" Tag="1" Width="25" />
+                    <Button Content="+10" Click="AdjustValue_Click" Tag="10" Width="25" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>기본 사운드 선택</TextBlock>
+                <ComboBox Name="DefaultSoundSelector" 
+                      SelectionChanged="DefaultSound_SelectionChanged">
+                    <ComboBoxItem Name="alarmBell" Tag="Light" Content="alarm-bell" />
+                    <ComboBoxItem Name="beBeBeBeBeBeBeBeBe" Tag="Dark" Content="be-be-be-be-be-be-be-be-be-" />
+                    <ComboBoxItem Name="beBeBeBeep" Tag="Dark" Content="be-be-be-beep" />
+                    <ComboBoxItem Name="beBeBeBeep2" Tag="Dark" Content="be-be-be-beep2" />
+                    <ComboBoxItem Name="beBeep" Tag="Dark" Content="be-beep" />
+                    <ComboBoxItem Name="beepBeep" Tag="Dark" Content="beep-beep" />
+                    <ComboBoxItem Name="beepBeepBeep" Tag="Dark" Content="beep-beep-beep" />
+                    <ComboBoxItem Name="bioHarzardAlert" Tag="Dark" Content="bio-harzard-alert" />
+                    <ComboBoxItem Name="harzardAlert" Tag="Dark" Content="harzard-alert" />
+                    <ComboBoxItem Name="mixed" Tag="Dark" Content="mixed" />
+                    <ComboBoxItem Name="musicBox" Tag="Dark" Content="music-box" />
+                    <ComboBoxItem Name="oldPhoneAlarm" Tag="Dark" Content="old-phone-alarm" />
+                    <ComboBoxItem Name="schoolBell" Tag="Dark" Content="school-bell" />
+                </ComboBox>
+                <Button Content="들어보기" Click="DefaultSoundListen"></Button>
+                <Button Content="중지" Click="StopSound"></Button>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="UseCustomSound" 
+                          Content="컴스텀 알람 소리 사용" 
+                          Checked="UseCostomSound_Changed" 
+                          Unchecked="UseCostomSound_Changed"/>
+                    <Button Content="등록하기" Click="LoadCustomSound"></Button>
+                    <Button Content="들어보기" Click="CustomSoundListen"></Button>
+                    <Button Content="중지" Click="StopSound"></Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                    <TextBlock Text="경로 : "></TextBlock>
+                    <TextBlock Name="CustomSoundPathTextBlock"></TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="AlarmRepeat_CheckBox" 
+                  Content="알람 반복재생" 
+                  Checked="AlarmRepeat_Changed" 
+                  Unchecked="AlarmRepeat_Changed"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock>
                     폰트 크기
                 </TextBlock>
+                <Button Content="키우기"></Button>
+                <Button Content="줄이기"></Button>
             </StackPanel>
-            <StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock>
-                    표시 형식 설정
+                    언어선택(Language)
                 </TextBlock>
-            </StackPanel>
-            <StackPanel>
-                <TextBlock>
-                    언어선택
-                </TextBlock>
+                <Button Content="한국어"></Button>
+                <Button Content="English"></Button>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock>
                     <Hyperlink>
                         업데이트 확인하기
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                    <Hyperlink>
+                        버그 신고하기
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>

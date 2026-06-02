@@ -11,7 +11,7 @@
         MouseMove="Window_MouseMove"
         MouseLeftButtonUp="Window_MouseLeftButtonUp"
         
-        Background="White"
+        Background="{DynamicResource BackgroundColor}"
         BorderBrush="#CCCCCC"
         BorderThickness="2">
     <Window.ContextMenu>
@@ -19,7 +19,7 @@
             <MenuItem Name="MakeTimerContextMenu" Header="타이머 생성" Click="OpenTimerPanel_Click" />
             <MenuItem Name="MakeAlarmContextMenu" Header="알람 생성" Click="OpenAlarmPanel_Click" />
             <Separator />
-            <MenuItem Header="설정" Click="Settings_Click" />
+            <MenuItem Header="설정(Settings)" Click="Settings_Click" />
             <MenuItem Header="스크립트 관리" Click="MangeScript_Click"/>
             <MenuItem Header="스크립트 불러오기" Click="LoadScript_Click" />
             <!--<MenuItem Header="임시" Click="ContextMenuTempButton_Click" />-->
@@ -35,6 +35,15 @@
             <MenuItem Header="완전히 종료" Click="CompletelyClose_HyperLink" />
         </ContextMenu>
     </Window.ContextMenu>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -66,6 +75,15 @@
                     <Hyperlink Click="CompletelyClose_HyperLink">완전히 종료</Hyperlink>
                 </TextBlock>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                        Visibility="{Binding IsShowTime, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="현재시각 "></TextBlock>
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center"
+                           Text="{Binding CurrentTime}"
+                           FontWeight="Bold"
+                           FontSize="13">
+                </TextBlock>
+            </StackPanel>
             <ListView
                     Grid.Row="1"
                     x:Name="TimerListView"
@@ -94,6 +112,7 @@
                                     FontSize="14"
                                     FontWeight="Bold"
                                     Margin="0,0,15,0"
+                                    Foreground="{Binding CurrentColor}"
                                     VerticalAlignment="Center"/>
 
                             <TextBlock Grid.Column="1"

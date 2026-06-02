@@ -34,5 +34,137 @@ namespace AlarmAndTimer.Properties {
                 this["LastOpenedDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DisplayCurrentTime {
+            get {
+                return ((bool)(this["DisplayCurrentTime"]));
+            }
+            set {
+                this["DisplayCurrentTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Light")]
+        public string ColorMode {
+            get {
+                return ((string)(this["ColorMode"]));
+            }
+            set {
+                this["ColorMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string SoundVolume {
+            get {
+                return ((string)(this["SoundVolume"]));
+            }
+            set {
+                this["SoundVolume"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FontSizeSetting {
+            get {
+                return ((string)(this["FontSizeSetting"]));
+            }
+            set {
+                this["FontSizeSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LanguageSetting {
+            get {
+                return ((string)(this["LanguageSetting"]));
+            }
+            set {
+                this["LanguageSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("be-be-be-beep")]
+        public string DefaultSoundPath {
+            get {
+                return ((string)(this["DefaultSoundPath"]));
+            }
+            set {
+                this["DefaultSoundPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SoundAlarm {
+            get {
+                return ((string)(this["SoundAlarm"]));
+            }
+            set {
+                this["SoundAlarm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SoundUse {
+            get {
+                return ((bool)(this["SoundUse"]));
+            }
+            set {
+                this["SoundUse"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseCustomSound {
+            get {
+                return ((bool)(this["UseCustomSound"]));
+            }
+            set {
+                this["UseCustomSound"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CustomSoundPath {
+            get {
+                return ((string)(this["CustomSoundPath"]));
+            }
+            set {
+                this["CustomSoundPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatSound {
+            get {
+                return ((bool)(this["RepeatSound"]));
+            }
+            set {
+                this["RepeatSound"] = value;
+            }
+        }
     }
 }
