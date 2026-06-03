@@ -1,0 +1,161 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!--MainWindow-->
+    <sys:String x:Key="CurrentTime">current time </sys:String>
+    <sys:String x:Key="Menu_MakeTimer">Make Timer</sys:String>
+    <sys:String x:Key="Menu_MakeAlarm">Make Alarm</sys:String>
+    <sys:String x:Key="Menu_Settings">Settings</sys:String>
+    <sys:String x:Key="Menu_Language">Language</sys:String>
+    <sys:String x:Key="Menu_ManageScript">Manage Script</sys:String>
+    <sys:String x:Key="Menu_LoadScript">Load Script</sys:String>
+    <sys:String x:Key="Menu_AlwaysOnTop">Always on Top</sys:String>
+    <sys:String x:Key="Menu_SendToTray">Send to Tray</sys:String>
+    <sys:String x:Key="Menu_HideTaskbar">Hide from Taskbar</sys:String>
+    <sys:String x:Key="Menu_Minimize">Minimize</sys:String>
+    <sys:String x:Key="Menu_Exit">Exit</sys:String>
+
+    <sys:String x:Key="Label_CurrentTime">Current Time</sys:String>
+    <sys:String x:Key="StartWithRightClick">Right-click to start</sys:String>
+    <sys:String x:Key="Make_Label_Memo">Memo :</sys:String>
+    <sys:String x:Key="Make_Btn_Delete">Delete</sys:String>
+    <sys:String x:Key="Make_Btn_Create">Create</sys:String>
+    <sys:String x:Key="Make_Btn_Cancel">Cancel</sys:String>
+    <sys:String x:Key="Label_AfterTimer">sec later</sys:String>
+    <sys:String x:Key="Label_AtAlarm">sec</sys:String>
+
+    <!-- setting -->
+    <sys:String x:Key="Title_Settings">Settings</sys:String>
+    <sys:String x:Key="Text_AppTitle">Simple Alarm &amp; Timer</sys:String>
+    <sys:String x:Key="Check_CurrentTime">Show Current Time</sys:String>
+    <sys:String x:Key="Label_ColorMode">Color Mode</sys:String>
+    <sys:String x:Key="Mode_Light">Light Mode</sys:String>
+    <sys:String x:Key="Mode_Dark">Dark Mode</sys:String>
+    <sys:String x:Key="Label_AlarmMethod">Alarm Method</sys:String>
+    <sys:String x:Key="Check_Sound">Sound</sys:String>
+    <sys:String x:Key="Label_Volume">Alarm Volume (1~100)</sys:String>
+    <sys:String x:Key="Label_DefaultSound">Default Sound</sys:String>
+    <sys:String x:Key="Btn_Listen">Preview</sys:String>
+    <sys:String x:Key="Btn_Stop">Stop</sys:String>
+    <sys:String x:Key="Check_CustomSound">Use Custom Sound</sys:String>
+    <sys:String x:Key="CustomSoundNotFound">The file could not be found</sys:String>
+    <sys:String x:Key="Btn_Register">Register</sys:String>
+    <sys:String x:Key="Label_Path">Path :</sys:String>
+    <sys:String x:Key="Check_AlarmRepeat">Repeat Alarm</sys:String>
+    <sys:String x:Key="Label_FontSize">Font Size (1~5)</sys:String>
+    <sys:String x:Key="Label_Language">Language</sys:String>
+    <sys:String x:Key="Link_Update">Check for Updates</sys:String>
+    <sys:String x:Key="Msg_UpdateAvailable">New version {0} is available!</sys:String>
+    <sys:String x:Key="Msg_AlreadyLatest">You are using the latest version.</sys:String>
+    <sys:String x:Key="Msg_UpdateFailed">Failed to check for updates.</sys:String>
+    <sys:String x:Key="Link_BugReport">Report a Bug</sys:String>
+    <sys:String x:Key="Link_Github">Visit Project Github</sys:String>
+    <sys:String x:Key="Link_Blog">Visit Author's Blog</sys:String>
+    <sys:String x:Key="Report_Bug">Report Bug to 'okanekudasai6@proton.me'</sys:String>
+    <sys:String x:Key="CopyLabel">copy</sys:String>
+    <sys:String x:Key="CopyConfirm">Email copied to clipboard!</sys:String>
+
+    <!-- script manager -->
+    <sys:String x:Key="Title_ScriptManager">Script Manager</sys:String>
+    <sys:String x:Key="Btn_Save">Save</sys:String>
+    <sys:String x:Key="Btn_Load">Load</sys:String>
+    <sys:String x:Key="Btn_AddRow">Add Row</sys:String>
+
+    <!-- Manage Card -->
+    <sys:String x:Key="Combo_Timer">Timer</sys:String>
+    <sys:String x:Key="Combo_Alarm">Alarm</sys:String>
+    <sys:String x:Key="Label_Hour">Hr</sys:String>
+    <sys:String x:Key="Label_Minute">Min</sys:String>
+    <sys:String x:Key="Label_Second">Sec</sys:String>
+    <sys:String x:Key="Label_Memo">Memo:</sys:String>
+    <sys:String x:Key="Btn_Delete">Delete</sys:String>
+    
+    <!-- MssageBox -->
+    <sys:String x:Key="Msg_Title_Error">Invalid Format</sys:String>
+
+    <sys:String x:Key="Msg_Content_HourRange" xml:space="preserve">(Line {0}) : {1}
+
+The hour must be between {2} and {3}.</sys:String>
+
+    <sys:String x:Key="Msg_Content_MinuteRange" xml:space="preserve">(Line {0}) : {1}
+
+The minute must be between 0 and 59.</sys:String>
+
+    <sys:String x:Key="Msg_Content_SecondRange" xml:space="preserve">(Line {0}) : {1}
+
+The second must be between 0 and 59.</sys:String>
+
+    <sys:String x:Key="Msg_Content_InvalidFirstWord" xml:space="preserve">Line({0}) : {1}
+
+The first word must be 'Alarm' or 'Timer'.
+
+※ Correct format example
+================
+   Timer 12:30:00
+   Alarm PM 02:22:12
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_TimerArgError" xml:space="preserve">Line({0}) : {1}
+
+Timer requires time arguments and an optional memo.
+
+※ Correct format example
+================
+   Timer 12:30:00
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_AlarmArgError" xml:space="preserve">Line({0}) : {1}
+
+Alarm requires AM/PM, time, and an optional memo.
+
+※ Correct format example
+================
+   Alarm PM 12:30:00
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_TimerFormatError" xml:space="preserve">Line{0} : {1}
+
+Timer arguments must be 3 numbers separated by colons. 
+ Ex) Timer 12:30:00</sys:String>
+
+    <sys:String x:Key="Msg_Content_ParsingError" xml:space="preserve">(Line {0}) : {1}
+
+The argument is not a valid number. 
+ ※ Correct format example
+
+================
+   Timer 12:30:00
+   Alarm PM 02:22:12
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_InvalidAmPm" xml:space="preserve">(Line {0}) : {1}
+
+The first argument for Alarm must be AM or PM. 
+ Ex) Alarm PM 12:30:00</sys:String>
+
+    <sys:String x:Key="Msg_Content_AlarmFormatError" xml:space="preserve">Line{0} : {1}
+
+Alarm's second argument must be 3 numbers separated by colons. 
+ Ex) Timer 12:30:00</sys:String>
+
+    <sys:String x:Key="Msg_Content_NoCustomSound" xml:space="preserve">No custom sound registered.</sys:String>
+
+    <sys:String x:Key="Msg_Title_Confirm">Confirm</sys:String>
+    <sys:String x:Key="Msg_Content_ClearAndLoad" xml:space="preserve">There are items in the list. 
+Clear the existing list and load the script?</sys:String>
+    <sys:String x:Key="Msg_Content_EnterValidNumber" xml:space="preserve">Please enter a valid number! 
+(e.g., 1 hour 30 min 45 sec -> 1, 30, 45)</sys:String>
+    <sys:String x:Key="Msg_Content_SelectAmPm">Please select AM/PM.</sys:String>
+    <sys:String x:Key="Msg_Content_TimeRangeError" xml:space="preserve">The time entered is out of range.
+(Hours: 1-12, Minutes/Seconds: 0-59)</sys:String>
+    <sys:String x:Key="Msg_Content_RangeError1to12">You can only enter numbers between 1 and 12.</sys:String>
+    <sys:String x:Key="Msg_Content_EnterOnlyNumbers">Please enter numbers only.</sys:String>
+    <sys:String x:Key="Msg_Content_RangeError0to23">You can only enter numbers between 0 and 23.</sys:String>
+    <sys:String x:Key="Msg_Content_RangeError0to59">You can only enter numbers between 0 and 59.</sys:String>
+    <sys:String x:Key="Msg_Content_FillInBlank">Line ({0}) : Please fill in the blanks</sys:String>
+    <sys:String x:Key="Msg_Content_NoDataToSave">There is no data to save.</sys:String>
+    <sys:String x:Key="Msg_Content_SaveErrorDetail">Save error: {0}</sys:String>
+    <sys:String x:Key="Str_ActivateWindow">Activate window when alarm ends</sys:String>
+    <sys:String x:Key="Str_ClickToStopAlarm">Click window to stop alarm</sys:String>
+    <sys:String x:Key="AppTitle">Alarm&amp;Timer</sys:String>
+</ResourceDictionary>

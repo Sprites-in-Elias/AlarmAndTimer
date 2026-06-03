@@ -1,16 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<Version>1.0.0.0</Version>
+	<Version>1.0.1.0</Version>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
+	<ApplicationIcon>Resources\AppIcon\icon3.ico</ApplicationIcon>
+	  <!--<PublishAot>true</PublishAot>
+    <TrimMode>link</TrimMode>-->
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\AppIcon\icon.ico" />
+    <None Remove="Resources\AppIcon\icon2.ico" />
+    <None Remove="Resources\AppIcon\icon3.ico" />
     <None Remove="Resources\SoundPack\alarm-bell.mp3" />
     <None Remove="Resources\SoundPack\be-be-be-be-be-be-be-be-be-.mp3" />
     <None Remove="Resources\SoundPack\be-be-be-beep.mp3" />
@@ -27,6 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AdsJumbo.WinForm.WPF" Version="1.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\AppIcon\icon.ico" />
+    <Resource Include="Resources\AppIcon\icon2.ico" />
+    <Resource Include="Resources\AppIcon\icon3.ico" />
     <Resource Include="Resources\SoundPack\alarm-bell.mp3">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

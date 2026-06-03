@@ -1,17 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
+
 
 namespace AlarmAndTimer
 {
     public static class Utils
     {
         private static MediaPlayer alarmPlayer = new MediaPlayer();
+        public static void GetLanguageFromSystem()
+        {
+            string setLanguage = Properties.Settings.Default.LanguageSetting;
+            if (setLanguage != null && (setLanguage == "Korean" || setLanguage == "English"))
+            {
+                return;
+            }
+            string lang = CultureInfo.CurrentUICulture.Name;
+            Debug.WriteLine(lang);
+            if (lang == "ko-KR")
+            {
+                Properties.Settings.Default.LanguageSetting = "Korean";
+            }
+            else
+            {
+                Properties.Settings.Default.LanguageSetting = "English";
+            }
+        }
+        public static void GetLanguageFromIni()
+        {
+            string setLanguage = Properties.Settings.Default.LanguageSetting;
+            if (setLanguage != null && (setLanguage == "Korean" || setLanguage == "English"))
+            {
+                return;
+            }
+            string? result = null;
+            string path = "config.ini";
+            if (File.Exists(path))
+            {
+                // 파일의 모든 줄을 읽어오기
+                var lines = File.ReadAllLines(path);
+                foreach (var line in lines)
+                {
+                    // "Language=" 로 시작하는 줄 찾기
+                    if (line.StartsWith("Language="))
+                    {
+                        // "=" 뒷부분(ko 또는 en)을 반환
+                        result = line.Split('=')[1].Trim();
+                    }
+                }
+            }
+            if (result == null || (result != "Korean" && result != "English"))
+            {
+                result = "Korean";
+            }
+            Properties.Settings.Default.LanguageSetting = result;
+        }
         public static string? GetScriptPath(string fileType)
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
@@ -41,25 +91,53 @@ namespace AlarmAndTimer
             }
             return null;
         }
+        public static void ShowLocalizedMessageBox(string contentKey, params object[] args)
+        {
+            // 제목 없이 메시지 박스를 띄울 때 사용할 기본 제목 (원한다면 string.Empty로 설정 가능)
+            var rawContent = System.Windows.Application.Current.TryFindResource(contentKey) as string ?? contentKey;
+
+            string content = (args != null && args.Length > 0) ? string.Format(rawContent, args) : rawContent;
+
+            System.Windows.MessageBox.Show(content);
+        }
+        public static void ShowLocalizedMessageBox(string contentKey, string titleKey, params object[] args)
+        {
+            var title = System.Windows.Application.Current.TryFindResource(titleKey) as string ?? titleKey;
+            var rawContent = System.Windows.Application.Current.TryFindResource(contentKey) as string ?? contentKey;
+
+            // args가 있다면 문자열 포맷팅 적용
+            string content = (args != null && args.Length > 0) ? string.Format(rawContent, args) : rawContent;
+
+            System.Windows.MessageBox.Show(content, title);
+        }
+        public static MessageBoxResult ShowLocalizedMessageBox(string contentKey, string titleKey, MessageBoxButton button, MessageBoxImage icon, params object[] args)
+        {
+            var title = System.Windows.Application.Current.TryFindResource(titleKey) as string ?? titleKey;
+            var rawContent = System.Windows.Application.Current.TryFindResource(contentKey) as string ?? contentKey;
+
+            string content = (args != null && args.Length > 0) ? string.Format(rawContent, args) : rawContent;
+
+            return System.Windows.MessageBox.Show(content, title, button, icon);
+        }
         private static bool CheckTimeValid(int[] numTimeParts, int hourStart, int hourLimit, string line, int lineNumber)
         {
             bool isHourValid = (numTimeParts[0] >= hourStart && numTimeParts[0] <= hourLimit);
             bool isMinuteValid = (numTimeParts[1] >= 0 && numTimeParts[1] <= 59);
             bool isSecondValid = (numTimeParts[2] >= 0 && numTimeParts[2] <= 59);
 
-            if (!isHourValid)
+            if (numTimeParts[0] < hourStart || numTimeParts[0] > hourLimit)
             {
-                System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n시간의 범위는 {hourStart}~{hourLimit} 입니다", "형식이 맞지 않습니다");
+                ShowLocalizedMessageBox("Msg_Content_HourRange", "Msg_Title_Error", lineNumber, line, hourStart, hourLimit);
                 return false;
             }
-            if (!isMinuteValid)
+            if (numTimeParts[1] < 0 || numTimeParts[1] > 59)
             {
-                System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n분의 범위는 0~59 입니다", "형식이 맞지 않습니다");
+                ShowLocalizedMessageBox("Msg_Content_MinuteRange", "Msg_Title_Error", lineNumber, line);
                 return false;
             }
-            if (!isSecondValid)
+            if (numTimeParts[2] < 0 || numTimeParts[2] > 59)
             {
-                System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n초의 범위는 0~59 입니다", "형식이 맞지 않습니다");
+                ShowLocalizedMessageBox("Msg_Content_SecondRange", "Msg_Title_Error", lineNumber, line);
                 return false;
             }
             return true;
@@ -93,18 +171,28 @@ namespace AlarmAndTimer
                 string type = parts[0].ToLower(); // 첫 단어: Timer 또는 Alarm
                 if (type != "timer" && type != "alarm")
                 {
-                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n첫단어는 Alarm 혹은 Timer 입니다\n\n※ 올바른 형식의 예\n\n================\n   Timer 12:30:00\n   Alarm PM 02:22:12\n================", "형식이 맞지 않습니다");
+                    ShowLocalizedMessageBox("Msg_Content_InvalidFirstWord", "Msg_Title_Error", lineNumber, line);
                     flag = true; break;
                 }
-                if (type == "timer" && parts.Length != 2 && parts.Length != 3)
+                if (type == "timer" && parts.Length < 2)
                 {
-                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n타이머는 시간 인수와 메모만 필요합니다\n\n※올바른 형식의 예\n\n================\n   Timer 12:30:00\n================", "형식이 맞지 않습니다");
+                    ShowLocalizedMessageBox("Msg_Content_TimerArgError", "Msg_Title_Error", lineNumber, line);
                     flag = true; break;
                 }
-                if (type == "alarm" && parts.Length != 3 && parts.Length != 4)
+                else if (type == "timer" && parts.Length > 2)
                 {
-                    System.Windows.MessageBox.Show($"Line({lineNumber}) : {line}\n\n알람은 AM/PM, 시간 및 메모 세 개의 인수만 필요합니다\n\n※올바른 형식의 예\n\n================\n   Alarm PM 12:30:00\n================", "형식이 맞지 않습니다");
+                    string timerName = string.Join(" ", parts.Skip(2));
+                    parts[2] = timerName;
+                }
+                if (type == "alarm" && parts.Length < 3)
+                {
+                    ShowLocalizedMessageBox("Msg_Content_AlarmArgError", "Msg_Title_Error", lineNumber, line);
                     flag = true; break;
+                }
+                else if (type == "alarm" && parts.Length > 3)
+                {
+                    string timerName = string.Join(" ", parts.Skip(3));
+                    parts[3] = timerName;
                 }
                 if (type == "timer")
                 {
@@ -112,16 +200,16 @@ namespace AlarmAndTimer
                     string[] timeParts = timeData.Split(':');
                     if (timeParts.Length != 3)
                     {
-                        System.Windows.MessageBox.Show($"Line{lineNumber} : {line}\n\n타이머의 인수는 :로 구분된 3개의 숫자입니다 \n 예) Timer 12:30:00", "형식이 맞지 않습니다");
+                        ShowLocalizedMessageBox("Msg_Content_TimerFormatError", "Msg_Title_Error", lineNumber, line);
                         flag = true; break;
                     }
                     int[]? numTimeParts = SplitTimeData(timeParts);
                     if (numTimeParts == null)
                     {
-                        System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n인자가 유효한 숫자가 아닙니다 \n ※올바른 형식의 예\n\n================\n   Timer 12:30:00\n   Alarm PM 02:22:12\n================", "형식이 맞지 않습니다");
+                        ShowLocalizedMessageBox("Msg_Content_ParsingError", "Msg_Title_Error", lineNumber, line);
                         flag = true; break;
                     }
-                    if (!CheckTimeValid(numTimeParts, 0, 99, line, lineNumber)) { flag = true; break; }
+                    if (!CheckTimeValid(numTimeParts, 0, 23, line, lineNumber)) { flag = true; break; }
                     string? memo = null;
                     if (parts.Length > 2) memo = parts[2];
                     InputItem item = new InputItem(type, null, timeParts[0], timeParts[1], timeParts[2], memo);
@@ -135,18 +223,21 @@ namespace AlarmAndTimer
                     string[] timeParts = timeData.Split(':');
                     if (amPm != "am" && amPm != "pm")
                     {
-                        System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n알람의 첫 번째 인수는 AM 혹은 PM 입니다 \n 예) Alarm PM 12:30:00", "형식이 맞지 않습니다");
+                        // 수정됨: AM/PM 오류 메시지
+                        ShowLocalizedMessageBox("Msg_Content_InvalidAmPm", "Msg_Title_Error", lineNumber, line);
                         flag = true; break;
                     }
                     if (timeParts.Length != 3)
                     {
-                        System.Windows.MessageBox.Show($"Line{lineNumber} : {line}\n\n알람의 두 번째 인수는 :로 구분된 3개의 숫자입니다 \n 예) Timer 12:30:00", "형식이 맞지 않습니다");
+                        // 수정됨: 알람 포맷 오류 메시지
+                        ShowLocalizedMessageBox("Msg_Content_AlarmFormatError", "Msg_Title_Error", lineNumber, line);
                         flag = true; break;
                     }
                     int[]? numTimeParts = SplitTimeData(timeParts);
                     if (numTimeParts == null)
                     {
-                        System.Windows.MessageBox.Show($"(Line {lineNumber}) : {line}\n\n인자가 유효한 숫자가 아닙니다 \n ※올바른 형식의 예\n\n===================\n   Timer 12:30:00 memomemo\n   Alarm PM 02:22:12 memomemo\n===================", "형식이 맞지 않습니다");
+                        // 수정됨: 파싱 오류 메시지
+                        ShowLocalizedMessageBox("Msg_Content_ParsingError", "Msg_Title_Error", lineNumber, line);
                         flag = true; break;
                     }
                     if (!CheckTimeValid(numTimeParts, 1, 12, line, lineNumber)) { flag = true; break; }
@@ -200,11 +291,12 @@ namespace AlarmAndTimer
             string filePath = Properties.Settings.Default.CustomSoundPath;
             if (filePath == null)
             {
-                MessageBox.Show("등록된 음원이 없어요");
+                ShowLocalizedMessageBox("Msg_Content_NoCustomSound", "Msg_Title_Info"); 
             }
             else if (!System.IO.File.Exists(filePath))
             {
-                Debug.WriteLine("파일을 찾을 수 없어요");
+                ShowLocalizedMessageBox("CustomSoundNotFound");
+                //Debug.WriteLine("파일을 찾을 수 없어요");
                 return;
             }
             alarmPlayer.Open(new Uri(filePath!, UriKind.Absolute));
@@ -224,6 +316,33 @@ namespace AlarmAndTimer
             alarmPlayer.MediaEnded -= AlarmPlayer_MediaEnded;
             alarmPlayer.Stop();
             alarmPlayer.Close();
+        }
+        public static void ApplyLanguage(string langCode)
+        {
+            var appResources = System.Windows.Application.Current.Resources.MergedDictionaries;
+
+            // 기존 언어 딕셔너리 찾기 (보통 이름에 'StringResources'를 포함하게 만듦)
+            var oldDict = appResources.FirstOrDefault(d =>
+                d.Source != null && d.Source.OriginalString.Contains("StringResources"));
+
+            if (oldDict != null)
+            {
+                appResources.Remove(oldDict);
+            }
+
+            // 새로운 언어 딕셔너리 추가
+            var newDict = new ResourceDictionary();
+            try
+            {
+                newDict.Source = new Uri($"Resources/StringResources/{langCode}.xaml", UriKind.Relative);
+                appResources.Add(newDict);
+            }
+            catch
+            {
+                // 파일 로드 실패 시 한국어로 강제 복구
+                newDict.Source = new Uri("Resources/StringResources/Korean.xaml", UriKind.Relative);
+                appResources.Add(newDict);
+            }
         }
     }
 }

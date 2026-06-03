@@ -23,9 +23,10 @@ namespace AlarmAndTimer
     /// </summary>
     public partial class ScriptManager : Window
     {
-        public ScriptManager()
+        public ScriptManager(bool alwaysTop)
         {
             InitializeComponent();
+            if (alwaysTop) this.Topmost = true;
         }
         private void MakeManageCard(object sender, EventArgs e)
         {
@@ -57,7 +58,7 @@ namespace AlarmAndTimer
                     if (secondInput == null || secondInput.Length == 0) secondInput = "0";
                     if (hourInput == "0" && minuteInput == "0" && secondInput == "0")
                     {
-                        System.Windows.MessageBox.Show($"Line ({index}) : 빈칸을 채워주세요");
+                        Utils.ShowLocalizedMessageBox("Msg_Content_FillInBlank", index);
                         return;
                     }
                 }
@@ -69,7 +70,7 @@ namespace AlarmAndTimer
                         || minuteInput == null || minuteInput.Length == 0
                         || secondInput == null || secondInput.Length == 0)
                     {
-                        System.Windows.MessageBox.Show($"Line ({index}) : 빈칸을 채워주세요");
+                        Utils.ShowLocalizedMessageBox("Msg_Content_FillInBlank", index);
                         return;
                     }
                     sb.Append(ampm).Append(blankChar);
@@ -79,7 +80,7 @@ namespace AlarmAndTimer
             }
             if (sb.Length == 0)
             {
-                System.Windows.MessageBox.Show($"저장할 데이터가 없습니다");
+                Utils.ShowLocalizedMessageBox("Msg_Content_NoDataToSave");
                 return;
             }
             sb.Remove(sb.Length - 1, 1);
@@ -104,7 +105,7 @@ namespace AlarmAndTimer
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show($"저장 오류: {ex.Message}");
+                    Utils.ShowLocalizedMessageBox("Msg_Content_SaveErrorDetail", ex.Message);
                 }
             }
         }

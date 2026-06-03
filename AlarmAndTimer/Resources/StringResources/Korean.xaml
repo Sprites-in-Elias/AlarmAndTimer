@@ -1,0 +1,163 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!--MainWindow-->
+    <sys:String x:Key="CurrentTime">현재시각 </sys:String>
+    <sys:String x:Key="Menu_MakeTimer">타이머 생성</sys:String>
+    <sys:String x:Key="Menu_MakeAlarm">알람 생성</sys:String>
+    <sys:String x:Key="Menu_Settings">설정(Settings)</sys:String>
+    <sys:String x:Key="Menu_Language">언어(Language)</sys:String>
+    <sys:String x:Key="Menu_ManageScript">스크립트 관리</sys:String>
+    <sys:String x:Key="Menu_LoadScript">스크립트 불러오기</sys:String>
+    <sys:String x:Key="Menu_AlwaysOnTop">항상 위</sys:String>
+    <sys:String x:Key="Menu_SendToTray">트레이로 보내기</sys:String>
+    <sys:String x:Key="Menu_HideTaskbar">시작표시줄에서 숨기기</sys:String>
+    <sys:String x:Key="Menu_Minimize">최소화</sys:String>
+    <sys:String x:Key="Menu_Exit">완전히 종료</sys:String>
+
+    <sys:String x:Key="Label_CurrentTime">현재시각</sys:String>
+    <sys:String x:Key="StartWithRightClick">우클릭으로 시작하세요</sys:String>
+    <sys:String x:Key="StartWithRightClickSub">Right-Click to Start</sys:String>
+    <sys:String x:Key="Make_Label_Memo">메모 :</sys:String>
+    <sys:String x:Key="Make_Btn_Delete">삭제</sys:String>
+    <sys:String x:Key="Make_Btn_Create">만들기</sys:String>
+    <sys:String x:Key="Make_Btn_Cancel">취소</sys:String>
+    <sys:String x:Key="Label_AfterTimer">초 후</sys:String>
+    <sys:String x:Key="Label_AtAlarm">초에</sys:String>
+    
+    <!-- setting -->
+    <sys:String x:Key="Title_Settings">설정</sys:String>
+    <sys:String x:Key="Text_AppTitle">간단한 알람 및 타이머</sys:String>
+    <sys:String x:Key="Check_CurrentTime">현재 시간 표시</sys:String>
+    <sys:String x:Key="Label_ColorMode">색상모드</sys:String>
+    <sys:String x:Key="Mode_Light">라이트모드</sys:String>
+    <sys:String x:Key="Mode_Dark">다크모드</sys:String>
+    <sys:String x:Key="Label_AlarmMethod">알림 방식</sys:String>
+    <sys:String x:Key="Check_Sound">소리</sys:String>
+    <sys:String x:Key="Label_Volume">알림 소리 크기(1~100)</sys:String>
+    <sys:String x:Key="Label_DefaultSound">기본 사운드 선택</sys:String>
+    <sys:String x:Key="Btn_Listen">들어보기</sys:String>
+    <sys:String x:Key="Btn_Stop">중지</sys:String>
+    <sys:String x:Key="Check_CustomSound">컴스텀 알람 소리 사용</sys:String>
+    <sys:String x:Key="CustomSoundNotFound">파일을 찾을 수 없습니다</sys:String>
+    <sys:String x:Key="Btn_Register">등록하기</sys:String>
+    <sys:String x:Key="Label_Path">경로 :</sys:String>
+    <sys:String x:Key="Check_AlarmRepeat">알람 반복재생</sys:String>
+    <sys:String x:Key="Label_FontSize">폰트 크기 (1~5)</sys:String>
+    <sys:String x:Key="Label_Language">언어선택(Language)</sys:String>
+    <sys:String x:Key="Link_Update">업데이트 확인하기</sys:String>
+    <sys:String x:Key="Msg_UpdateAvailable">새 버전 {0}이(가) 출시되었습니다!</sys:String>
+    <sys:String x:Key="Msg_AlreadyLatest">현재 최신 버전입니다.</sys:String>
+    <sys:String x:Key="Msg_UpdateFailed">업데이트 확인 실패</sys:String>
+    <sys:String x:Key="Link_BugReport">버그 신고하기</sys:String>
+    <sys:String x:Key="Link_Github">프로젝트 깃허브 방문하기</sys:String>
+    <sys:String x:Key="Link_Blog">제작자 블로그 방문하기</sys:String>
+    <sys:String x:Key="Report_Bug">버그 신고하기 'okanekudasai6@proton.me'</sys:String>
+    <sys:String x:Key="CopyLabel">복사</sys:String>
+    <sys:String x:Key="CopyConfirm">이메일이 복사되었습니다!</sys:String>
+
+    <!-- script manager -->
+    <sys:String x:Key="Title_ScriptManager">스크립트 매니저</sys:String>
+    <sys:String x:Key="Btn_Save">저장</sys:String>
+    <sys:String x:Key="Btn_Load">불러오기</sys:String>
+    <sys:String x:Key="Btn_AddRow">열 추가</sys:String>
+    
+    <!-- Manage Card -->
+    <sys:String x:Key="Combo_Timer">Timer</sys:String>
+    <sys:String x:Key="Combo_Alarm">Alarm</sys:String>
+    <sys:String x:Key="Label_Hour">시</sys:String>
+    <sys:String x:Key="Label_Duration">간</sys:String>
+    <sys:String x:Key="Label_Minute">분</sys:String>
+    <sys:String x:Key="Label_Second">초</sys:String>
+    <sys:String x:Key="Label_Memo">메모:</sys:String>
+    <sys:String x:Key="Btn_Delete">삭제</sys:String>
+    
+    <!-- MessageBox -->
+    <sys:String x:Key="Msg_Title_Error">형식이 맞지 않습니다</sys:String>
+
+    <sys:String x:Key="Msg_Content_HourRange" xml:space="preserve">(Line {0}) : {1}
+
+시간의 범위는 {2}~{3} 입니다</sys:String>
+
+    <sys:String x:Key="Msg_Content_MinuteRange" xml:space="preserve">(Line {0}) : {1}
+
+분의 범위는 0~59 입니다</sys:String>
+
+    <sys:String x:Key="Msg_Content_SecondRange" xml:space="preserve">(Line {0}) : {1}
+
+초의 범위는 0~59 입니다</sys:String>
+
+    <sys:String x:Key="Msg_Content_InvalidFirstWord" xml:space="preserve">Line({0}) : {1}
+
+첫단어는 Alarm 혹은 Timer 입니다
+
+※ 올바른 형식의 예
+================
+   Timer 12:30:00
+   Alarm PM 02:22:12
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_TimerArgError" xml:space="preserve">Line({0}) : {1}
+
+타이머는 시간 인수와 메모만 필요합니다
+
+※올바른 형식의 예
+================
+   Timer 12:30:00
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_AlarmArgError" xml:space="preserve">Line({0}) : {1}
+
+알람은 AM/PM, 시간 및 메모 세 개의 인수만 필요합니다
+
+※올바른 형식의 예
+================
+   Alarm PM 12:30:00
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_TimerFormatError" xml:space="preserve">Line{0} : {1}
+
+타이머의 인수는 :로 구분된 3개의 숫자입니다 
+ 예) Timer 12:30:00</sys:String>
+
+    <sys:String x:Key="Msg_Content_ParsingError" xml:space="preserve">(Line {0}) : {1}
+
+인자가 유효한 숫자가 아닙니다 
+ ※올바른 형식의 예
+
+================
+   Timer 12:30:00
+   Alarm PM 02:22:12
+================</sys:String>
+
+    <sys:String x:Key="Msg_Content_InvalidAmPm" xml:space="preserve">(Line {0}) : {1}
+
+알람의 첫 번째 인수는 AM 혹은 PM 입니다 
+ 예) Alarm PM 12:30:00</sys:String>
+
+    <sys:String x:Key="Msg_Content_AlarmFormatError" xml:space="preserve">Line{0} : {1}
+
+알람의 두 번째 인수는 :로 구분된 3개의 숫자입니다 
+ 예) Timer 12:30:00</sys:String>
+
+    <sys:String x:Key="Msg_Content_NoCustomSound" xml:space="preserve">등록된 음원이 없어요</sys:String>
+
+    <sys:String x:Key="Msg_Title_Confirm">확인</sys:String>
+    <sys:String x:Key="Msg_Content_ClearAndLoad" xml:space="preserve">목록에 항목이 있습니다. 
+기존 목록을 삭제하고 스크립트를 불러옵니다.</sys:String>
+    <sys:String x:Key="Msg_Content_EnterValidNumber" xml:space="preserve">올바른 숫자를 입력해줘! 
+(예: 1시간 30분 45초 -> 1, 30, 45)</sys:String>
+    <sys:String x:Key="Msg_Content_SelectAmPm">AM/PM을 선택해 주세요.</sys:String>
+    <sys:String x:Key="Msg_Content_TimeRangeError" xml:space="preserve">입력한 시간이 범위를 벗어났습니다.
+(시간: 1~12, 분/초: 0~59)</sys:String>
+    <sys:String x:Key="Msg_Content_RangeError1to12">1부터 12 사이의 숫자만 입력 가능합니다.</sys:String>
+    <sys:String x:Key="Msg_Content_EnterOnlyNumbers">숫자만 입력해 주세요.</sys:String>
+    <sys:String x:Key="Msg_Content_RangeError0to23">0부터 23 사이의 숫자만 입력 가능합니다.</sys:String>
+    <sys:String x:Key="Msg_Content_RangeError0to59">0부터 59 사이의 숫자만 입력 가능합니다.</sys:String>
+    <sys:String x:Key="Msg_Content_FillInBlank">Line ({0}) : 빈칸을 채워주세요</sys:String>
+    <sys:String x:Key="Msg_Content_NoDataToSave">저장할 데이터가 없습니다.</sys:String>
+    <sys:String x:Key="Msg_Content_SaveErrorDetail">저장 오류: {0}</sys:String>
+    <sys:String x:Key="Str_ActivateWindow">알람 종료시 창 활성화</sys:String>
+    <sys:String x:Key="Str_ClickToStopAlarm">창을 클릭하여 알람 종료</sys:String>
+    <sys:String x:Key="AppTitle">알람 &amp; 타이머</sys:String>
+</ResourceDictionary>

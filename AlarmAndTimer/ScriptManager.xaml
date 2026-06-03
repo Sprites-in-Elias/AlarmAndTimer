@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:AlarmAndTimer"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        
-        Title="스크립트 매니저" Height="450" Width="605">
+        Title="{DynamicResource Title_ScriptManager}" Height="450" Width="605">
     <Grid Background="#efefef">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -18,19 +17,16 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Name="TimerList" Orientation="Vertical">
                     </StackPanel>
-                 </ScrollViewer>
+                </ScrollViewer>
             </Border>
         </Grid>
         <Grid Grid.Column="1">
             <Grid Margin="0,18,18,18">
                 <StackPanel Orientation="Vertical">
-                    <Button Content="저장" Click="SaveScript" />
-                    <Button Content="불러오기" Margin="0,10,0,0" Click="LoadScript" />
-                    <Button Content="열 추가" Margin="0,40,0,0" Click="MakeManageCard"/>
+                    <Button Content="{DynamicResource Btn_Save}" Click="SaveScript" />
+                    <Button Content="{DynamicResource Btn_Load}" Margin="0,10,0,0" Click="LoadScript" />
+                    <Button Content="{DynamicResource Btn_AddRow}" Margin="0,40,0,0" Click="MakeManageCard"/>
                 </StackPanel>
-                <!--Grid VerticalAlignment="Bottom">
-                    <Button Content="취소" Click="CancelButton_Click" />
-                </Grid-->
             </Grid>
         </Grid>
     </Grid>

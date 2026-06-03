@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="DisplayCurrentTime" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ColorMode" Type="System.String" Scope="User">
       <Value Profile="(Default)">Light</Value>
@@ -15,10 +15,10 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="FontSizeSetting" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="LanguageSetting" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Korean</Value>
     </Setting>
     <Setting Name="DefaultSoundPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">be-be-be-beep</Value>
@@ -37,6 +37,15 @@
     </Setting>
     <Setting Name="RepeatSound" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseActivatingWindow" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WindowLeft" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="WindowTop" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

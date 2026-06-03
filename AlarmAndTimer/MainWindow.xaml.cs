@@ -2,9 +2,13 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,10 +16,13 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Resources;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Path = System.IO.Path;
@@ -25,6 +32,78 @@ namespace AlarmAndTimer
 {
     public partial class MainWindow : Window
     {
+        [StructLayout(LayoutKind.Sequential)]
+        private struct FLASHWINFO
+        {
+            public uint cbSize;
+            public IntPtr hwnd;
+            public uint dwFlags;
+            public uint uCount;
+            public uint dwTimeout;
+        }
+
+        private const uint FLASHW_TRAY = 2;
+        private const uint FLASHW_TIMERNOFG = 12;
+        private const uint FLASHW_STOP = 0;
+        private const uint FLASHW_CAPTION = 0x00000001;
+        private const uint FLASHW_TIMER = 0x00000004;
+
+        [DllImport("user32.dll")]
+        private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        private const int SW_RESTORE = 9; // 최소화된 경우 복구 코드
+
+        public void ActivateWindow()
+        {
+            IntPtr windowHandle = new WindowInteropHelper(this).Handle;
+
+            // 최소화되어 있다면 원래 크기로 복구
+            ShowWindow(windowHandle, SW_RESTORE);
+
+            // 창을 최상위로 설정
+            SetForegroundWindow(windowHandle);
+        }
+
+        // --- 호출용 퍼블릭 메서드 ---
+        public static void StartFlashing()
+        {
+            var window = System.Windows.Application.Current.MainWindow;
+            if (window == null) return;
+            Debug.WriteLine(window);
+
+            IntPtr windowHandle = new WindowInteropHelper(window).Handle;
+            FLASHWINFO fInfo = new FLASHWINFO();
+            fInfo.cbSize = (uint)Marshal.SizeOf(fInfo);
+            fInfo.hwnd = windowHandle;
+            fInfo.dwFlags = FLASHW_CAPTION | FLASHW_TRAY | FLASHW_TIMER;
+            fInfo.uCount = 0;
+            fInfo.dwTimeout = 0;
+
+            FlashWindowEx(ref fInfo);
+        }
+        public static void StopFlashing()
+        {
+            var window = System.Windows.Application.Current.MainWindow;
+            if (window == null) return;
+
+            IntPtr windowHandle = new System.Windows.Interop.WindowInteropHelper(window).Handle;
+
+            FLASHWINFO fInfo = new FLASHWINFO();
+            fInfo.cbSize = (uint)Marshal.SizeOf(typeof(FLASHWINFO));
+            fInfo.hwnd = windowHandle;
+            fInfo.dwFlags = FLASHW_STOP; // STOP 플래그 사용
+            fInfo.uCount = 0;
+            fInfo.dwTimeout = 0;
+
+            FlashWindowEx(ref fInfo);
+        }
+
         private MainViewModel _viewModel;
         private NotifyIcon? trayIcon;
         public MainWindow()
@@ -34,6 +113,24 @@ namespace AlarmAndTimer
             this.DataContext = _viewModel;
 
             TimerListView.ItemsSource = _viewModel.Timers;
+            double left = Properties.Settings.Default.WindowLeft;
+            double top = Properties.Settings.Default.WindowTop;
+            double primaryWidth = SystemParameters.PrimaryScreenWidth;
+            double primaryHeight = SystemParameters.PrimaryScreenHeight;
+            bool isVisibleOnPrimary = (left >= 0 && left < primaryWidth) &&
+                              (top >= 0 && top < primaryHeight);
+
+            if (isVisibleOnPrimary && (left != 0 || top != 0))
+            {
+                this.WindowStartupLocation = WindowStartupLocation.Manual;
+                this.Left = left;
+                this.Top = top;
+            }
+            else
+            {
+                // 주 모니터 밖이거나 저장된 좌표가 없으면 중앙에 배치
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
         }
         private void ShowStackPanelWithAnimation()
         {
@@ -46,28 +143,34 @@ namespace AlarmAndTimer
         private void ContextMenu_Opened(object sender, RoutedEventArgs e)
         {
             AlwaysTopContextMenu.IsChecked = this.Topmost;
-            if (MakePanel.Visibility == Visibility.Visible)
+            string language = Properties.Settings.Default.LanguageSetting;
+            foreach (var item in LanguageSet.Items)
             {
-                MakeTimerContextMenu.IsEnabled = false;
-                MakeAlarmContextMenu.IsEnabled = false;
+                if (item is MenuItem menuItem)
+                {
+                    // menu아이템의 Name과 language 문자열을 비교하여 체크 상태 설정
+                    menuItem.IsChecked = (menuItem.Name == language);
+                }
             }
-            else
-            {
-                MakeTimerContextMenu.IsEnabled = true;
-                MakeAlarmContextMenu.IsEnabled = true;
-            }
+            if (MakePanel.Visibility == Visibility.Visible) { CloseMakePanel(); }
         }
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            Settings st = new Settings(_viewModel);
+            Settings st = new Settings(_viewModel, this.Topmost);
             st.ShowDialog();
         }
         private void MangeScript_Click(object sender, EventArgs e)
         {
-            ScriptManager editor = new ScriptManager();
+            ScriptManager editor = new ScriptManager(this.Topmost);
             editor.ShowDialog();
         }
-
+        private void ChangeLanguage(object sender, EventArgs e)
+        {
+            MenuItem? item = sender as MenuItem;
+            Utils.ApplyLanguage(item!.Name);
+            AlarmAndTimer.Properties.Settings.Default.LanguageSetting = item.Name;
+            AlarmAndTimer.Properties.Settings.Default.Save();
+        }
         private void LoadScript_Click(object sender, EventArgs e)
         {
             string? path = Utils.GetScriptPath("텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*");
@@ -82,11 +185,11 @@ namespace AlarmAndTimer
                 int count = vm.Timers.Count;
                 if (count > 0)
                 {
-                    MessageBoxResult result = System.Windows.MessageBox.Show(
-                    "목록에 항목이 있습니다. 기존 목록을 삭제하고 스크립트를 불러옵니다",
-                    "확인",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                    MessageBoxResult result = Utils.ShowLocalizedMessageBox(
+                        "Msg_Content_ClearAndLoad",
+                        "Msg_Title_Confirm",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning);
 
                     if (result == MessageBoxResult.Yes)
                     {
@@ -117,7 +220,9 @@ namespace AlarmAndTimer
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            AlarmBreakingNotice.Visibility = Visibility.Collapsed;
             Utils.AlarmPlayerClose();
+            StopFlashing();
             _mouseDownPoint = e.GetPosition(this);
             _isDragging = false;
         }
@@ -155,7 +260,9 @@ namespace AlarmAndTimer
         private void SetupTrayIcon()
         {
             trayIcon = new NotifyIcon();
-            trayIcon.Icon = System.Drawing.SystemIcons.Application;
+            StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Resources/AppIcon/icon3.ico"));
+            trayIcon.Icon = new Icon(sri.Stream);
+            //trayIcon.Icon = System.Drawing.SystemIcons.Application;
             trayIcon.Text = "타이머";
 
             trayIcon.DoubleClick += (s, e) =>
@@ -201,17 +308,6 @@ namespace AlarmAndTimer
             }   
         }
         private void CompletelyClose_HyperLink(object sender, RoutedEventArgs e) { System.Windows.Application.Current.Shutdown(); }
-        private void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SubButtonsPanel.Visibility == Visibility.Visible)
-            {
-                SubButtonsPanel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                SubButtonsPanel.Visibility = Visibility.Visible;
-            }
-        }
         private void HourUpButton_Click(object sender, RoutedEventArgs e)
         {
             if (StartButton.Tag.ToString() == "Timer")
@@ -370,7 +466,7 @@ namespace AlarmAndTimer
                        (int.TryParse(h, out int hh) ? hh : -1);
             if (second == -1 || minute == -1 || hour == -1 || second < 0 || minute < 0 || hour < 0)
             {
-                System.Windows.MessageBox.Show("올바른 숫자를 입력해줘! (예: 1시간 30분 45초 -> 1, 30, 45)");
+                Utils.ShowLocalizedMessageBox("Msg_Content_EnterValidNumber", "Msg_Title_Error");
                 return;
             }
             // 리스트에 새 타이머 추가
@@ -378,6 +474,9 @@ namespace AlarmAndTimer
             newTimer.AlarmTriggered += () => {
                 // MainWindow의 PlayAlarm 호출
                 if (Properties.Settings.Default.SoundUse) Utils.PlayAlarm();
+                AlarmBreakingNotice.Visibility = Visibility.Visible;
+                StartFlashing();
+                if (Properties.Settings.Default.UseActivatingWindow) ActivateWindow();
             };
             _viewModel.Timers.Add(newTimer);
 
@@ -412,7 +511,7 @@ namespace AlarmAndTimer
             // 강제 선택이 되있기 때문에 만족할 일이 없는 조건문
             if (amPm == null || amPm.Length == 0)
             {
-                System.Windows.MessageBox.Show("AM/PM을 선택해 주세요.");
+                Utils.ShowLocalizedMessageBox("Msg_Content_SelectAmPm", "Msg_Title_Error");
                 return;
             }
             int second = string.IsNullOrWhiteSpace(s) ? 0 :
@@ -426,10 +525,14 @@ namespace AlarmAndTimer
             if (second == -1 || minute == -1 || hour == -1 || second < 0 || minute < 0 || hour < 0)
             {
                 Debug.WriteLine($"!!{second},, {minute},, {hour}");
-                System.Windows.MessageBox.Show("올바른 숫자를 입력해줘! (예: 1시간 30분 45초 -> 1, 30, 45)");
+                Utils.ShowLocalizedMessageBox("Msg_Content_EnterValidNumber", "Msg_Title_Error");
                 return;
             }
-
+            if (hour < 1 || hour > 12 || minute < 0 || minute > 59 || second < 0 || second > 59)
+            {
+                Utils.ShowLocalizedMessageBox("Msg_Content_TimeRangeError", "Msg_Title_Error");
+                return;
+            }
             if (amPm == "pm" && hour < 12) { hour += 12; }
             if (amPm == "am" && hour == 12) { hour = 0; }
 
@@ -452,6 +555,9 @@ namespace AlarmAndTimer
             item.AlarmTriggered += () => {
                 // MainWindow의 PlayAlarm 호출
                 if (Properties.Settings.Default.SoundUse) Utils.PlayAlarm();
+                AlarmBreakingNotice.Visibility = Visibility.Visible;
+                StartFlashing();
+                if (Properties.Settings.Default.UseActivatingWindow) ActivateWindow();
             };
             _viewModel.Timers.Add(item);
 
@@ -480,6 +586,7 @@ namespace AlarmAndTimer
         }
         private void DeleteTimer_Click(object sender, RoutedEventArgs e)
         {
+            AlarmBreakingNotice.Visibility = Visibility.Collapsed;
             Utils.AlarmPlayerClose();
             if (sender is System.Windows.Controls.Button button && button.DataContext is TimerItem timerItem)
             {
@@ -512,6 +619,12 @@ namespace AlarmAndTimer
                 vm.Timers.Move(index, index + 1);
             }
         }
+        public void ClosedMainWindow(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.WindowLeft = this.Left;
+            Properties.Settings.Default.WindowTop = this.Top;
+            Properties.Settings.Default.Save();
+        }
     }
     public class MainViewModel : INotifyPropertyChanged
     {
@@ -521,6 +634,13 @@ namespace AlarmAndTimer
             get => _currentTime;
             set { _currentTime = value; OnPropertyChanged(); }
         }
+        private double _myFontSize;
+        public double MyFontSize
+        {
+            get => _myFontSize;
+            set
+            { _myFontSize = value; OnPropertyChanged(); Debug.WriteLine($"폰트사이즈:{_myFontSize}"); }
+        }
         public MainViewModel()
         {
             // 시계 타이머 설정
@@ -528,7 +648,10 @@ namespace AlarmAndTimer
             clockTimer.Interval = TimeSpan.FromSeconds(1);
             clockTimer.Tick += (s, e) => { CurrentTime = DateTime.Now.ToString("HH:mm:ss"); };
             clockTimer.Start();
+
+            MyFontSize = 10 + int.Parse(Properties.Settings.Default.FontSizeSetting) * 2;
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -542,6 +665,7 @@ namespace AlarmAndTimer
                 OnPropertyChanged();
             }
         }
+
         public ObservableCollection<TimerItem> Timers { get; set; } = new ObservableCollection<TimerItem>();
     }
     public class DesignViewModel : MainViewModel
@@ -552,4 +676,5 @@ namespace AlarmAndTimer
         //        Timers.Add(new TimerItem(100, ""));
         //    }
     }
+
 }

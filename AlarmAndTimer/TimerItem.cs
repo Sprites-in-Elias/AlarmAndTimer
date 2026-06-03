@@ -29,7 +29,6 @@ namespace AlarmAndTimer
                     _remainingSeconds = value;
                     OnPropertyChanged(nameof(RemainingSeconds));
                     OnPropertyChanged(nameof(TimeLeftString));
-                    Debug.WriteLine($"{RemainingSeconds}, {CurrentColor}");
                     OnPropertyChanged(nameof(CurrentColor));
                 }
             }

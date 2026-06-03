@@ -15,19 +15,37 @@ namespace AlarmAndTimer
         {
             base.OnStartup(e);
 
-            // 1. Settings.settings에서 저장된 테마 이름 가져오기 (없으면 기본값 "Light")
             string savedTheme = AlarmAndTimer.Properties.Settings.Default.ColorMode ?? "Light";
-            // 2. 테마 적용
             ApplyTheme(savedTheme);
+
+            Utils.GetLanguageFromSystem();
+            //Utils.GetLanguageFromIni();
+            string langCode = AlarmAndTimer.Properties.Settings.Default.LanguageSetting;
+            Utils.ApplyLanguage(langCode);
         }
 
         public static void ApplyTheme(string themeName)
         {
             var app = System.Windows.Application.Current;
-            app.Resources.MergedDictionaries.Clear();
+            // 1. 기존 테마 딕셔너리 찾아내기 (이름으로 구분)
+            var oldTheme = app.Resources.MergedDictionaries
+                .FirstOrDefault(d => d.Source != null && d.Source.ToString().EndsWith("_Theme.xaml"));
 
+            // 2. 새로운 테마 경로
             var themeUri = new Uri($"Resources/{themeName}_Theme.xaml", UriKind.Relative);
-            app.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = themeUri });
+            var newTheme = new ResourceDictionary() { Source = themeUri };
+
+            // 3. 기존 테마가 있다면 교체, 없다면 추가
+            if (oldTheme != null)
+            {
+                int index = app.Resources.MergedDictionaries.IndexOf(oldTheme);
+                app.Resources.MergedDictionaries.RemoveAt(index);
+                app.Resources.MergedDictionaries.Insert(index, newTheme);
+            }
+            else
+            {
+                app.Resources.MergedDictionaries.Add(newTheme);
+            }
 
             // 3. 설정 저장
             AlarmAndTimer.Properties.Settings.Default.ColorMode = themeName;

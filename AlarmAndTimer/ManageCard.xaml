@@ -3,9 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AlarmAndTimer"
              mc:Ignorable="d" 
-             
              Loaded="ManageCard_Loaded"
              LostFocus="UserControl_LostFocus"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -15,8 +13,8 @@
                       SelectionChanged="TypeSelector_SelectionChanged"
                       Width="60"
                       PreviewMouseDoubleClick="NoPropagation">
-                <ComboBoxItem Name="ComboTimer" Content="Timer" />
-                <ComboBoxItem Name="ComboAlarm" Content="Alarm" />
+                <ComboBoxItem Name="ComboTimer" Content="{DynamicResource Combo_Timer}" />
+                <ComboBoxItem Name="ComboAlarm" Content="{DynamicResource Combo_Alarm}" />
             </ComboBox>
 
             <ComboBox Name="AmPmSelector" Visibility="Collapsed" Width="52" PreviewMouseDoubleClick="NoPropagation" Margin="5,0,0,0">
@@ -27,32 +25,31 @@
             <StackPanel Name="TimeInputBox" Orientation="Horizontal" Visibility="Collapsed">
                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBox Name="HourInput" Width="24" LostFocus="Hour_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
-                    <TextBlock Text="시" />
-                    <TextBlock Name="GanText" Text="간" Visibility="Collapsed" />
+                    <TextBlock Text="{DynamicResource Label_Hour}" />
+                    <TextBlock Name="GanText" 
+                       Text="{DynamicResource Label_Duration}" 
+                       Visibility="Collapsed" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBox Name="MinuteInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
-                    <TextBlock Text="분" />
+                    <TextBlock Text="{DynamicResource Label_Minute}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                     <TextBox Name="SecondInput" Width="24" LostFocus="MinuteSecond_LostFocus" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
-                    <TextBlock Text="초" />
+                    <TextBlock Text="{DynamicResource Label_Second}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
-                    <TextBlock Text="메모:" />
+                    <TextBlock Text="{DynamicResource Label_Memo}" />
                     <TextBox Name="MemoInput" Width="90" PreviewMouseLeftButtonDown="TextBoxAllSelect" PreviewMouseDoubleClick="NoPropagation" />
                 </StackPanel>
 
-
-                <Button Content="삭제" Margin="5,0,0,0" Click="DeleteCard_Click"/>
+                <Button Content="{DynamicResource Btn_Delete}" Margin="5,0,0,0" Click="DeleteCard_Click"/>
                 <Button Content="▲" Margin="5,0,0,0" VerticalAlignment="Center" Tag="-1" Click="MoveCard"/>
                 <Button Content="▼" Margin="5,0,0,0" VerticalAlignment="Center" Tag="1" Click="MoveCard"/>
-
             </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
-

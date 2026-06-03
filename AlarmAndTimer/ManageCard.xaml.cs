@@ -151,14 +151,14 @@ namespace AlarmAndTimer
                 {
                     if (value < 1 || value > 12)
                     {
-                        MessageBox.Show("1부터 12 사이의 숫자만 입력 가능합니다.");
+                        Utils.ShowLocalizedMessageBox("Msg_Content_RangeError1to12");
                         textBox.Text = ""; // 또는 이전 값으로 복구
                         textBox.Focus();    // 다시 포커스를 주어 수정하게 함
                     }
                 }
                 else
                 {
-                    MessageBox.Show("숫자만 입력해 주세요.");
+                    Utils.ShowLocalizedMessageBox("Msg_Content_EnterOnlyNumbers");
                     textBox.Text = "";
                     textBox.Focus();
                 }
@@ -167,16 +167,16 @@ namespace AlarmAndTimer
             {
                 if (int.TryParse(textBox!.Text, out int value))
                 {
-                    if (value < 0 || value > 99)
+                    if (value < 0 || value > 23)
                     {
-                        MessageBox.Show("0부터 99 사이의 숫자만 입력 가능합니다.");
+                        Utils.ShowLocalizedMessageBox("Msg_Content_RangeError0to23");
                         textBox.Text = ""; // 또는 이전 값으로 복구
                         textBox.Focus();    // 다시 포커스를 주어 수정하게 함
                     }
                 }
                 else
                 {
-                    MessageBox.Show("숫자만 입력해 주세요.");
+                    Utils.ShowLocalizedMessageBox("Msg_Content_EnterOnlyNumbers");
                     textBox.Text = "";
                     textBox.Focus();
                 }
@@ -192,7 +192,7 @@ namespace AlarmAndTimer
                 // 2. 0 ~ 59 범위 검사
                 if (value < 0 || value > 59)
                 {
-                    MessageBox.Show("0부터 59 사이의 숫자만 입력 가능합니다.");
+                    Utils.ShowLocalizedMessageBox("Msg_Content_RangeError0to59");
                     textBox.Text = ""; // 또는 이전 값으로 복구
                     textBox.Focus();    // 다시 포커스를 주어 수정하게 함
                 }
@@ -200,7 +200,7 @@ namespace AlarmAndTimer
             else
             {
                 // 숫자가 아닐 경우
-                MessageBox.Show("숫자만 입력해 주세요.");
+                Utils.ShowLocalizedMessageBox("Msg_Content_EnterOnlyNumbers");
                 textBox.Text = "";
                 textBox.Focus();
             }
