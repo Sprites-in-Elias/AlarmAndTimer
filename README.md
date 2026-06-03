@@ -58,15 +58,14 @@
 [![C#](https://img.shields.io/badge/C%23-WPF-blue.svg)](https://dotnet.microsoft.com/apps/wpf)
 
 ## 설치 방법
+- 최신버전 다운로드 링크 : <https://github.com/Sprites-in-Elias/AlarmAndTimer/releases/latest>
 1. zip 파일을 다운받기
    - zip 파일을 다운받아서 압축을 푼 폴더를 Program Files 폴더에 넣고 exe 파일만 바로가기로 만들어 사용하십시오
 2. exe 파일을 받아서 설치하기
-   - 설치시 위협이 있을 수 있다는 경고가 뜰 수 있는데 개인개발자라 그렇다 못 믿으면 어쩔 수 없는거고,, 아님 소스코드 받아서 직접 빌드ㄱㄱ
+   - 설치시 위협이 있을 수 있다는 경고가 뜰 수 있는데 개인개발자라 그렇다. 못 믿으면 어쩔 수 없는거고,, 아님 소스코드 받아서 직접 빌드ㄱㄱ
 
 ## 릴리즈 파일 바이러스 검사 결과
-
-
-
+![6](https://github.com/Sprites-in-Elias/AlarmAndTimer/blob/master/screenshot/6.png?raw=true)
 
 ### 프로젝트 빌드
 ---
