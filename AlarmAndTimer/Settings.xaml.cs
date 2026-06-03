@@ -23,6 +23,7 @@ using Clipboard = System.Windows.Clipboard;
 using ComboBox = System.Windows.Controls.ComboBox;
 using MessageBox = System.Windows.MessageBox;
 using TextBox = System.Windows.Controls.TextBox;
+using Windows.System;
 
 namespace AlarmAndTimer
 {
@@ -306,10 +307,22 @@ namespace AlarmAndTimer
             e.Handled = true;
         }
         */
+        private async void OpenUrl(string url)
+        {
+            try
+            {
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(url));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("브라우저를 열 수 없습니다.");
+            }
+        }
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             // 기본 브라우저를 열어서 URL로 이동
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            //Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            OpenUrl(e.Uri.AbsoluteUri);
             e.Handled = true;
         }
         private void CopyEmail(object sender, RoutedEventArgs e)
