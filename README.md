@@ -61,6 +61,7 @@
 
 ## 설치 방법
 - 마이크로소프트 다운로드 링크(권장) : <https://apps.microsoft.com/detail/9NC13HLT49NW?hl=ko-kr&gl=KR&ocid=pdpshare>
+![7](https://github.com/Sprites-in-Elias/AlarmAndTimer/blob/master/screenshot/7.png?raw=true)
 - 최신버전 다운로드 링크 : <https://github.com/Sprites-in-Elias/AlarmAndTimer/releases/latest>
 1. zip 파일을 다운받기
    - zip 파일을 다운받아서 압축을 푼 폴더를 Program Files 폴더에 넣고 exe 파일만 바로가기로 만들어 사용하십시오
